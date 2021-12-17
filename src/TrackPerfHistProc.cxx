@@ -37,7 +37,7 @@ TrackPerfHistProc::TrackPerfHistProc()
 			   );
 
   registerInputCollection( LCIO::TRACK,
-			   "TrackCollection" , 
+			   "TrackCollection" ,
 			   "Name of the Track collection" ,
 			   _trkColName,
 			   _trkColName
