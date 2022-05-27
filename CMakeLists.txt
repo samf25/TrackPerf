@@ -12,16 +12,27 @@ SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 SET( ${PROJECT_NAME}_VERSION_MINOR 1 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
 
+# extra options
+OPTION(WITH_PARQUET "Enable output to Apache Parquet." OFF)
+
 ### DEPENDENCIES ############################################################
 
 FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
 
 FIND_PACKAGE( Marlin 1.0 REQUIRED ) # minimum required Marlin version
 
-FIND_PACKAGE(Arrow REQUIRED)
+FIND_PACKAGE( ROOT REQUIRED COMPONENTS Hist)
 
-GET_FILENAME_COMPONENT(Arrow_SEARCH_DIR ${Arrow_CONFIG} DIRECTORY)
-FIND_PACKAGE(Parquet REQUIRED HINTS ${Arrow_SEARCH_DIR})
+FIND_PACKAGE( RAIDA REQUIRED )
+
+IF(WITH_PARQUET)
+  FIND_PACKAGE( Arrow  REQUIRED )
+
+  GET_FILENAME_COMPONENT(Arrow_SEARCH_DIR ${Arrow_CONFIG} DIRECTORY)
+  FIND_PACKAGE(Parquet REQUIRED HINTS ${Arrow_SEARCH_DIR})
+ELSE()
+  MESSAGE("Parquet output disabled.")
+ENDIF()
 
 ### DOCUMENTATION ###########################################################
 
@@ -35,14 +46,29 @@ ENDIF()
 
 ### LIBRARY #################################################################
 
-# sources
+# Main library with Processors
 ADD_LIBRARY(TrackPerf SHARED
-  ./src/TrackPerfParquet.cxx
-  ./src/TrackPerfFile.cxx
+  ./src/TrackPerfHistProc.cxx
+  ./src/TrackHists.cxx
+  ./src/TruthHists.cxx
   )
 TARGET_INCLUDE_DIRECTORIES(TrackPerf
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE
-  ${Marlin_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(TrackPerf PRIVATE LCParquet)
+  ${Marlin_INCLUDE_DIRS}
+  ${RAIDA_INCLUDE_DIRS})
+TARGET_LINK_LIBRARIES(TrackPerf
+  PRIVATE
+  ${RAIDA_LIBRARIES}
+  ROOT::Hist)
+TARGET_COMPILE_DEFINITIONS(TrackPerf
+  PRIVATE
+  ${RAIDA_DEFINITIONS})
+
+IF(WITH_PARQUET)
+  TARGET_SOURCES(TrackPerf PRIVATE
+    ./src/TrackPerfParquet.cxx
+    ./src/TrackPerfFile.cxx)
+  TARGET_LINK_LIBRARIES(TrackPerf PRIVATE LCParquet)
+ENDIF()
