@@ -104,9 +104,12 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
       if(mcp->isDecayedInTracker())
 	{ continue; }
 
-      float pt=std::sqrt(std::pow(mcp->getMomentum()[0],2)+std::pow(mcp->getMomentum()[1],2));
-      if(0.5<pt && pt<0.8)
-	{ std::cout << mcp->getPDG() << "\t" << mcp->getSimulatorStatus() << "\t" << mcp->isBackscatter() << "\t" << mcp->getVertex()[0] << "\t" << mcp->getVertex()[1] << "\t" << mcp->getVertex()[2] << std::endl; }
+      // Tracker acceptance
+      const double* mom=mcp->getMomentum();
+      double pt=std::sqrt(std::pow(mom[0],2)+std::pow(mom[1],2));
+      double lambda=std::atan2(mom[2],pt);
+      if(abs(lambda)>75/180*3.14)
+	{ continue; }
 
       mcpSet.insert(mcp);
       _allTruths->fill(mcp);
@@ -139,6 +142,9 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
       const EVENT::LCRelation *rel=static_cast<const EVENT::LCRelation*>(tr2mcCol->getElementAt(i));
       const EVENT::MCParticle *mcp=static_cast<const EVENT::MCParticle*>(rel->getFrom());
       const EVENT::Track      *trk=static_cast<const EVENT::Track     *>(rel->getTo  ());
+
+      if(mcpSet.count(mcp)==0)
+	{ continue; } // truth particle not selected
 
       if(rel->getWeight()>_matchProb)
 	{
