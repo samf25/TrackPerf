@@ -17,7 +17,7 @@ TrackHists::TrackHists()
 
 void TrackHists::fill(const EVENT::Track* track)
 {
-  float pt=0.3*_Bz/track->getOmega()/1000;
+  float pt=fabs(0.3*_Bz/track->getOmega()/1000);
   h_pt    ->Fill(pt);
 
   float lambda=std::atan(track->getTanLambda());
