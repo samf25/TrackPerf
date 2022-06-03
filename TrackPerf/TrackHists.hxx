@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TH1.h>
+#include <TH2.h>
 
 namespace EVENT
 {
@@ -33,5 +34,6 @@ namespace TrackPerf
     TH1* h_d0;
     TH1* h_z0;
     TH1* h_nhit;
+    TH2* h_lambda_nhit;
   };
 }
