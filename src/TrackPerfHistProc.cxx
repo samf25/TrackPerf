@@ -108,7 +108,7 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
       const double* mom=mcp->getMomentum();
       double pt=std::sqrt(std::pow(mom[0],2)+std::pow(mom[1],2));
       double lambda=std::atan2(mom[2],pt);
-      if(abs(lambda)>75/180*3.14)
+      if(fabs(lambda)>75./180*3.14)
 	{ continue; }
 
       mcpSet.insert(mcp);

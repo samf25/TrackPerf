@@ -12,11 +12,12 @@ TrackHists::TrackHists()
   h_d0     = new TH1F("reco_d0"    , ";Track d_{0} [mm]; Tracks [/0.2 mm]" , 100,-10   , 10   );
   h_z0     = new TH1F("reco_z0"    , ";Track z_{0} [mm]; Tracks [/0.2 mm]" , 100,-10   , 10   );
   h_nhit   = new TH1F("reco_nhit"  , ";Track Hits; Tracks [/hit]"          , 20 ,-0.5  , 19.5   );
+  h_lambda_nhit = new TH2F("lambda_vs_nhit" , ";Track #lambda; Track Hits" , 100, -3.14,  3.14,  20,  -0.5,  19.5  );
 }
 
 void TrackHists::fill(const EVENT::Track* track)
 {
-  float pt=0.3*_Bz/track->getOmega()/1000;
+  float pt=fabs(0.3*_Bz/track->getOmega()/1000);
   h_pt    ->Fill(pt);
 
   float lambda=std::atan(track->getTanLambda());
@@ -26,5 +27,7 @@ void TrackHists::fill(const EVENT::Track* track)
   h_z0    ->Fill(track->getZ0());
 
   h_nhit  ->Fill(track->getTrackerHits().size());
+  
+  h_lambda_nhit ->Fill(lambda, track->getTrackerHits().size());
 }
 
