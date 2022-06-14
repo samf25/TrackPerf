@@ -1,14 +1,11 @@
 # include "TrackPerf/FilterTracks.hxx"
 
-#include "TrackPerf/TrackHists.hxx"
-#include "TrackPerf/TruthHists.hxx"
-
 #include <set>
+#include <math.h>
 
-#include <EVENT/LCCollection.h>
-#include <EVENT/LCEvent.h>
-#include <EVENT/LCRelation.h>
-#include <EVENT/MCParticle.h>
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Detector.h>
+
 #include <EVENT/Track.h>
 #include <IMPL/LCCollectionVec.h>
 
@@ -66,6 +63,7 @@ void FilterTracks::processEvent( LCEvent * evt )
 {
   // Make the output track collection
   LCCollectionVec *OutTrackCollection = new LCCollectionVec(LCIO::TRACK);
+  OutTrackCollection->setSubset(true);
 
   // Get input collection
   LCCollection* InTrackCollection  =evt->getCollection(_InTrackCollection);
@@ -76,13 +74,11 @@ void FilterTracks::processEvent( LCEvent * evt )
   // Filter
   for(int i=0; i<InTrackCollection->getNumberOfElements(); i++)
     { 
-      const EVENT::Track *trk=static_cast<const EVENT::Track*>(InTrackCollection->getElementAt(i));
+      EVENT::Track *trk=static_cast<EVENT::Track*>(InTrackCollection->getElementAt(i));
 
       int nhit = trk->getTrackerHits().size();
       float _Bz=3.57;
       float pt=fabs(0.3*_Bz/trk->getOmega()/1000);
-      
-      EVENT::Track *track=static_cast<EVENT::Track*>(InTrackCollection->getElementAt(i));
 
       if(nhit > _NHits and pt > _MinPt)
 	      {OutTrackCollection->addElement(track);}
