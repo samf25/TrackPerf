@@ -3,7 +3,6 @@
 #include <set>
 #include <math.h>
 
-#include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/Detector.h>
 
 #include <EVENT/Track.h>
