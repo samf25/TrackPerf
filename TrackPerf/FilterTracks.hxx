@@ -25,6 +25,8 @@ public:
     */
    virtual void processRunHeader( LCRunHeader* run ) ;
 
+   virtual void buildBfield() ;
+
    /** Called for every event - the working horse.
     */
    virtual void processEvent(LCEvent* evt) ;
@@ -42,9 +44,12 @@ private:
    std::string _OutTrackCollection {};
 
    //! Cut off for number of hits
-   int _NHits = 5;
+   int _NHits = 0;      
    
    //! Cut off for momentum
-   float _MinPt = 1.0;
+   float _MinPt = 1.0;   //units GeV
+
+   //! Default magnetic field value
+   float _Bz = 3.57;   //units Tesla
 };
 

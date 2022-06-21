@@ -53,10 +53,26 @@ void FilterTracks::init()
 {
   // Print the initial parameters
   printParameters() ;
+  buildBfield() ;
 }
 
 void FilterTracks::processRunHeader( LCRunHeader* /*run*/)
 { }
+
+void FilterTracks::buildBfield() 
+{
+  // Get the magnetic field
+  dd4hep::Detector& lcdd = dd4hep::Detector::getInstance();
+  const double position[3] = {
+      0, 0,
+      0};  // position to calculate magnetic field at (the origin in this case)
+  double magneticFieldVector[3] = {
+      0, 0, 0};  // initialise object to hold magnetic field
+  lcdd.field().magneticField(
+      position,
+      magneticFieldVector);  // get the magnetic field vector from DD4hep
+  _Bz = magneticFieldVector[2]*pow(10,13);
+}
 
 void FilterTracks::processEvent( LCEvent * evt )
 {
@@ -76,16 +92,16 @@ void FilterTracks::processEvent( LCEvent * evt )
       EVENT::Track *trk=static_cast<EVENT::Track*>(InTrackCollection->getElementAt(i));
 
       int nhit = trk->getTrackerHits().size();
-      float _Bz=3.57;
+      //float _Bz=3.57;
+      
       float pt=fabs(0.3*_Bz/trk->getOmega()/1000);
 
       if(nhit > _NHits and pt > _MinPt)
-	      {OutTrackCollection->addElement(track);}
-
-      // Save output track collection
-      evt->addCollection(OutTrackCollection, _OutTrackCollection);
+	      {OutTrackCollection->addElement(trk);}
 	  }
-    
+
+  // Save output track collection
+  evt->addCollection(OutTrackCollection, _OutTrackCollection);  
 }
 
 void FilterTracks::end()

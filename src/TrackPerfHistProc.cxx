@@ -131,6 +131,7 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
       _allTracks->fill(trk);
     }
 
+
   //
   // Loop over track to MC associations to save matched objects
   LCCollection* tr2mcCol=evt->getCollection(_trkMatchColName);
@@ -147,21 +148,24 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
 	{ continue; } // truth particle not selected
 
       if(rel->getWeight()>_matchProb)
-	{
-	  _realTracks->fill(trk);
-	  _realTruths->fill(mcp);
+	{  
+    if(trkSet.find(trk) != trkSet.end())
+    {
+	    _realTracks->fill(trk);
+	    _realTruths->fill(mcp);
 
-	  mcpSet.erase(mcp);
-	  trkSet.erase(trk);
-	}
+	    mcpSet.erase(mcp);
+	    trkSet.erase(trk);
     }
+	}
+    }  
 
   //
   // Save unmatched objects
   for(const EVENT::MCParticle* mcp : mcpSet)
     { _unmtTruths->fill(mcp); }
   for(const EVENT::Track* trk : trkSet)
-    { _fakeTracks->fill(trk); }
+    { _fakeTracks->fill(trk); } 
 }
 
 void TrackPerfHistProc::check( LCEvent * /*evt*/ )
