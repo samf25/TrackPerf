@@ -44,8 +44,11 @@ private:
    std::string _OutTrackCollection {};
 
    //! Cut off for number of hits
-   int _NHits = 0;      
-   
+   int _NHits = 7;    
+   int _NHits1 = 3;
+   int _NHits2 = 2;
+   int _NHits3 = 1;
+
    //! Cut off for momentum
    float _MinPt = 1.0;   //units GeV
 

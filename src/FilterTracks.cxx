@@ -26,6 +26,24 @@ FilterTracks::FilterTracks()
 			     _NHits,
 			     _NHits
 			      );
+  
+  registerProcessorParameter("NHits1",
+		  	     "Minimum number of hits on vertex detector",
+			     _NHits1,
+			     _NHits1
+			      );
+
+  registerProcessorParameter("NHits2",
+		  	     "Minimum number of hits on inner tracker",
+			     _NHits2,
+			     _NHits2
+			      );
+
+  registerProcessorParameter("NHits3",
+		  	     "Minimum number of hits on outer tracker",
+			     _NHits3,
+			     _NHits3
+			      );
 
   registerProcessorParameter("MinPt",
 		  	     "Minimum transverse momentum",
@@ -91,12 +109,14 @@ void FilterTracks::processEvent( LCEvent * evt )
     { 
       EVENT::Track *trk=static_cast<EVENT::Track*>(InTrackCollection->getElementAt(i));
 
-      int nhit = trk->getTrackerHits().size();
-      //float _Bz=3.57;
+      int nhit  = trk->getTrackerHits().size();
+      int nhit1 = trk->getSubdetectorHitNumbers()[1]+trk->getSubdetectorHitNumbers()[2];
+      int nhit2 = trk->getSubdetectorHitNumbers()[3]+trk->getSubdetectorHitNumbers()[4];
+      int nhit3 = trk->getSubdetectorHitNumbers()[5]+trk->getSubdetectorHitNumbers()[6];
       
       float pt=fabs(0.3*_Bz/trk->getOmega()/1000);
 
-      if(nhit > _NHits and pt > _MinPt)
+      if(nhit > _NHits and nhit1 > _NHits1 and nhit2 > _NHits2 and nhit3 > _NHits3 and pt > _MinPt)
 	      {OutTrackCollection->addElement(trk);}
 	  }
 
