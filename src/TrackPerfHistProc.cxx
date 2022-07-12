@@ -2,6 +2,7 @@
 
 #include "TrackPerf/TrackHists.hxx"
 #include "TrackPerf/TruthHists.hxx"
+#include "TrackPerf/ResoHists.hxx"
 
 #include <set>
 
@@ -64,11 +65,14 @@ void TrackPerfHistProc::init()
   tree->mkdir("all" ); tree->cd("all" );
   _allTracks =std::make_shared<TrackPerf::TrackHists>();
   _allTruths =std::make_shared<TrackPerf::TruthHists>();
+  h_track_number = new TH1F("track_number", ";Number of seeds/tracks;Events", 100, 0, 300000);
   tree->mkdir("../real"); tree->cd("../real");
   _realTracks=std::make_shared<TrackPerf::TrackHists>();
   _realTruths=std::make_shared<TrackPerf::TruthHists>();
+  _realReso    =std::make_shared<TrackPerf::ResoHists>();
   tree->mkdir("../fake"); tree->cd("../fake");
   _fakeTracks=std::make_shared<TrackPerf::TrackHists>();
+  h_fake_number = new TH1F("fake_number", ";Number of fake tracks;Events]", 100,  0, 300000);
   tree->mkdir("../unmt"); tree->cd("../unmt");
   _unmtTruths=std::make_shared<TrackPerf::TruthHists>();
 }
@@ -130,7 +134,7 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
       trkSet.insert(trk);
       _allTracks->fill(trk);
     }
-
+    h_track_number->Fill(trkSet.size());
 
   //
   // Loop over track to MC associations to save matched objects
@@ -153,6 +157,7 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
     {
 	    _realTracks->fill(trk);
 	    _realTruths->fill(mcp);
+      _realReso  ->fill(trk,mcp);
 
 	    mcpSet.erase(mcp);
 	    trkSet.erase(trk);
@@ -165,8 +170,9 @@ void TrackPerfHistProc::processEvent( LCEvent * evt )
   for(const EVENT::MCParticle* mcp : mcpSet)
     { _unmtTruths->fill(mcp); }
   for(const EVENT::Track* trk : trkSet)
-    { _fakeTracks->fill(trk); } 
-}
+    { _fakeTracks->fill(trk);} 
+  h_fake_number->Fill(trkSet.size());
+} 
 
 void TrackPerfHistProc::check( LCEvent * /*evt*/ )
 { }

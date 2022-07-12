@@ -31,7 +31,7 @@ namespace TrackPerf
 
     //! Reconstructed track pT
     TH2* h_track_truth_pt;
-    TH1* h_reso_pt;
+    TH1* h_reso_pt_rel;
     TH1* h_reso_lambda;
     TH1* h_reso_phi;
   };

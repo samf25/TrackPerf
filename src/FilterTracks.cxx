@@ -1,6 +1,5 @@
 # include "TrackPerf/FilterTracks.hxx"
 
-#include <set>
 #include <math.h>
 
 #include <DD4hep/Detector.h>
@@ -89,7 +88,7 @@ void FilterTracks::buildBfield()
   lcdd.field().magneticField(
       position,
       magneticFieldVector);  // get the magnetic field vector from DD4hep
-  _Bz = magneticFieldVector[2]*pow(10,13);
+  _Bz = magneticFieldVector[2]/dd4hep::tesla;
 }
 
 void FilterTracks::processEvent( LCEvent * evt )
@@ -118,6 +117,12 @@ void FilterTracks::processEvent( LCEvent * evt )
 
       if(nhit > _NHits and nhit1 > _NHits1 and nhit2 > _NHits2 and nhit3 > _NHits3 and pt > _MinPt)
 	      {OutTrackCollection->addElement(trk);}
+      
+      if(nhit < 9 and nhit1 > 3 and nhit2 > 2 and nhit3 > 1 and pt > _MinPt)
+        {std::cout << "Total: " << nhit << std::endl;
+         std::cout << "Vertex: " << nhit1 << std::endl;
+         std::cout << "Inner: " << nhit2 << std::endl; 
+         std::cout << "Outer: " << nhit3 << std::endl;}
 	  }
 
   // Save output track collection

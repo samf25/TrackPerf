@@ -14,9 +14,10 @@ TrackHists::TrackHists()
   h_nhit   = new TH1F("reco_nhit"  , ";Track Hits; Tracks [/hit]"                , 20 ,-0.5  , 19.5 );
   h_lambda_nhit = new TH2F("lambda_vs_nhit" , ";Track #lambda; Track Hits"       , 100, -3.14,  3.14,  20,  -0.5,  19.5  );
   h_pt_nhit = new TH2F("pt_vs_nhit" , ";Track p_{T} [GeV]; Track Hits"           , 100, 0    ,  10  ,  20,  -0.5,  19.5  );
-  h_nhit1  = new TH1F("reco_nhit1" , ";Vertex detector track hits; Tracks [/hit]", 20 ,-0.5  , 19.5 );
-  h_nhit2  = new TH1F("reco_nhit2" , ";Inner tracker track hits; Tracks [/hit]"  , 20 ,-0.5  , 19.5 );
-  h_nhit3  = new TH1F("reco_nhit3" , ";Outer tracker track hits; Tracks [/hit]"  , 20 ,-0.5  , 19.5 );
+  h_pt_lambda = new TH2F("pt_vs_lambda" , ";Track p_{T} [GeV]; Track #lambda"    , 100, 0    ,  10  , 100, -3.14,  3.14  );
+  h_nhit1  = new TH1F("reco_nhit_vtx" , ";Vertex detector track hits; Tracks [/hit]"  , 20 ,-0.5  , 19.5 );
+  h_nhit2  = new TH1F("reco_nhit_inner" , ";Inner tracker track hits; Tracks [/hit]"    , 20 ,-0.5  , 19.5 );
+  h_nhit3  = new TH1F("reco_nhit_outer" , ";Outer tracker track hits; Tracks [/hit]"  , 20 ,-0.5  , 19.5 );
 }
 
 void TrackHists::fill(const EVENT::Track* track)
@@ -34,7 +35,10 @@ void TrackHists::fill(const EVENT::Track* track)
   
   h_lambda_nhit ->Fill(lambda, track->getTrackerHits().size());
   h_pt_nhit     ->Fill(pt, track->getTrackerHits().size());
+  h_pt_lambda   ->Fill(pt, lambda);
 
-  //h_nhit1 ->Fill(track->getSubdetectorHitNumbers()[0]);
+  h_nhit1 ->Fill(track->getSubdetectorHitNumbers()[1]+track->getSubdetectorHitNumbers()[2]);
+  h_nhit2 ->Fill(track->getSubdetectorHitNumbers()[3]+track->getSubdetectorHitNumbers()[4]);
+  h_nhit3 ->Fill(track->getSubdetectorHitNumbers()[5]+track->getSubdetectorHitNumbers()[6]);
 }
 
