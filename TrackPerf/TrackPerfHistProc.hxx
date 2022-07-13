@@ -62,6 +62,6 @@ private:
   std::shared_ptr<TrackPerf::TruthHists> _unmtTruths;
   std::shared_ptr<TrackPerf::ResoHists> _realReso;
 
-  TH1 * h_fake_number;
-  TH1 * h_track_number;
+  TH1 * h_number_of_fakes;
+  TH1 * h_number_of_tracks;
 };

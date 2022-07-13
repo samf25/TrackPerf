@@ -20,28 +20,28 @@ FilterTracks::FilterTracks()
   _description = "FilterTracks processor filters a collection of tracks based on NHits and MinPt and outputs a filtered collection";
 
   // register steering parameters: name, description, class-variable, default value
-  registerProcessorParameter("NHits",
+  registerProcessorParameter("NHitsTotal",
 		  	     "Minimum number of hits on track",
-			     _NHits,
-			     _NHits
+			     _NHitsTotal,
+			     _NHitsTotal
 			      );
   
-  registerProcessorParameter("NHits1",
+  registerProcessorParameter("NHitsVertex",
 		  	     "Minimum number of hits on vertex detector",
-			     _NHits1,
-			     _NHits1
+			     _NHitsVertex,
+			     _NHitsVertex
 			      );
 
-  registerProcessorParameter("NHits2",
+  registerProcessorParameter("NHitsInner",
 		  	     "Minimum number of hits on inner tracker",
-			     _NHits2,
-			     _NHits2
+			     _NHitsInner,
+			     _NHitsInner
 			      );
 
-  registerProcessorParameter("NHits3",
+  registerProcessorParameter("NHitsOuter",
 		  	     "Minimum number of hits on outer tracker",
-			     _NHits3,
-			     _NHits3
+			     _NHitsOuter,
+			     _NHitsOuter
 			      );
 
   registerProcessorParameter("MinPt",
@@ -108,21 +108,15 @@ void FilterTracks::processEvent( LCEvent * evt )
     { 
       EVENT::Track *trk=static_cast<EVENT::Track*>(InTrackCollection->getElementAt(i));
 
-      int nhit  = trk->getTrackerHits().size();
-      int nhit1 = trk->getSubdetectorHitNumbers()[1]+trk->getSubdetectorHitNumbers()[2];
-      int nhit2 = trk->getSubdetectorHitNumbers()[3]+trk->getSubdetectorHitNumbers()[4];
-      int nhit3 = trk->getSubdetectorHitNumbers()[5]+trk->getSubdetectorHitNumbers()[6];
+      int nhittotal  = trk->getTrackerHits().size();
+      int nhitvertex = trk->getSubdetectorHitNumbers()[1]+trk->getSubdetectorHitNumbers()[2];
+      int nhitinner = trk->getSubdetectorHitNumbers()[3]+trk->getSubdetectorHitNumbers()[4];
+      int nhitouter = trk->getSubdetectorHitNumbers()[5]+trk->getSubdetectorHitNumbers()[6];
       
       float pt=fabs(0.3*_Bz/trk->getOmega()/1000);
 
-      if(nhit > _NHits and nhit1 > _NHits1 and nhit2 > _NHits2 and nhit3 > _NHits3 and pt > _MinPt)
+      if(nhittotal > _NHitsTotal and nhitvertex > _NHitsVertex and nhitinner > _NHitsInner and nhitouter > _NHitsOuter and pt > _MinPt)
 	      {OutTrackCollection->addElement(trk);}
-      
-      if(nhit < 9 and nhit1 > 3 and nhit2 > 2 and nhit3 > 1 and pt > _MinPt)
-        {std::cout << "Total: " << nhit << std::endl;
-         std::cout << "Vertex: " << nhit1 << std::endl;
-         std::cout << "Inner: " << nhit2 << std::endl; 
-         std::cout << "Outer: " << nhit3 << std::endl;}
 	  }
 
   // Save output track collection

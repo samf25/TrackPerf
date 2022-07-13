@@ -44,13 +44,13 @@ private:
    std::string _OutTrackCollection {};
 
    //! Cut off for total number of hits
-   int _NHits = 7;   
+   int _NHitsTotal = 7;   
    //! Cut off for number of hits in vertex detector (barrel and endcap combined)
-   int _NHits1 = 3;
+   int _NHitsVertex = 3;
    //! Cut off for number of hits in inner tracker (barrel and endcap combined)
-   int _NHits2 = 2;
+   int _NHitsInner = 2;
    //! Cut off for number of hits in outer tracker (barrel and endcap combined)
-   int _NHits3 = 1;
+   int _NHitsOuter = 1;
 
    //! Cut off for momentum
    float _MinPt = 1.0;   //units GeV
