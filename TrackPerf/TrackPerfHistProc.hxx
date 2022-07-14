@@ -8,6 +8,7 @@ namespace TrackPerf
 {
   class TrackHists;
   class TruthHists;
+  class ResoHists;
 }
 
 //! Creates a simple column wise ntuple in a HistProc from LCIO collections.
@@ -56,8 +57,11 @@ private:
   std::shared_ptr<TrackPerf::TrackHists> _allTracks ;
   std::shared_ptr<TrackPerf::TrackHists> _realTracks;
   std::shared_ptr<TrackPerf::TrackHists> _fakeTracks;
-
   std::shared_ptr<TrackPerf::TruthHists> _allTruths ;
   std::shared_ptr<TrackPerf::TruthHists> _realTruths;
   std::shared_ptr<TrackPerf::TruthHists> _unmtTruths;
+  std::shared_ptr<TrackPerf::ResoHists> _realReso;
+
+  TH1 * h_number_of_fakes;
+  TH1 * h_number_of_tracks;
 };
