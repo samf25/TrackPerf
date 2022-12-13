@@ -37,8 +37,11 @@ void TrackHists::fill(const EVENT::Track* track)
   h_pt_nhit     ->Fill(pt, track->getTrackerHits().size());
   h_pt_lambda   ->Fill(pt, lambda);
 
-  h_nhit1 ->Fill(track->getSubdetectorHitNumbers()[1]+track->getSubdetectorHitNumbers()[2]);
-  h_nhit2 ->Fill(track->getSubdetectorHitNumbers()[3]+track->getSubdetectorHitNumbers()[4]);
-  h_nhit3 ->Fill(track->getSubdetectorHitNumbers()[5]+track->getSubdetectorHitNumbers()[6]);
+  const EVENT::IntVec& subdetectorHitNumbers = track->getSubdetectorHitNumbers();
+  if(subdetectorHitNumbers.size()>6) {
+    h_nhit1 ->Fill(subdetectorHitNumbers[1]+subdetectorHitNumbers[2]);
+    h_nhit2 ->Fill(subdetectorHitNumbers[3]+subdetectorHitNumbers[4]);
+    h_nhit3 ->Fill(subdetectorHitNumbers[5]+subdetectorHitNumbers[6]);
+  }
 }
 
