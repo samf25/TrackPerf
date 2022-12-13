@@ -59,9 +59,9 @@ FilterTracks::FilterTracks()
 
   registerOutputCollection( LCIO::TRACK,
 		  	   "OutTrackCollection" ,
-			   "Name of output collection",
-			   _OutTrackCollection,
-			   std::string("FilteredTracks")
+			    "Name of output collection",
+			    _OutTrackCollection,
+			    _OutTrackCollection
 			    );
 
 }
@@ -109,15 +109,39 @@ void FilterTracks::processEvent( LCEvent * evt )
       EVENT::Track *trk=static_cast<EVENT::Track*>(InTrackCollection->getElementAt(i));
 
       int nhittotal  = trk->getTrackerHits().size();
-      int nhitvertex = trk->getSubdetectorHitNumbers()[1]+trk->getSubdetectorHitNumbers()[2];
-      int nhitinner = trk->getSubdetectorHitNumbers()[3]+trk->getSubdetectorHitNumbers()[4];
-      int nhitouter = trk->getSubdetectorHitNumbers()[5]+trk->getSubdetectorHitNumbers()[6];
-      
-      float pt=fabs(0.3*_Bz/trk->getOmega()/1000);
+      if(_NHitsTotal>0 && nhittotal <= _NHitsTotal ) {
+	continue;
+      }
+118
+      const EVENT::IntVec& subdetectorHitNumbers = trk->getSubdetectorHitNumbers();
+      if(_NHitsVertex>0 ) {
+	int nhitvertex = trk->getSubdetectorHitNumbers()[1]+trk->getSubdetectorHitNumbers()[2];
+	if(nhitvertex <= _NHitsVertex) {
+	  continue;
+	}
+      }
 
-      if(nhittotal > _NHitsTotal and nhitvertex > _NHitsVertex and nhitinner > _NHitsInner and nhitouter > _NHitsOuter and pt > _MinPt)
-	      {OutTrackCollection->addElement(trk);}
-	  }
+      if(_NHitsInner>0 ) {
+	int nhitinner = trk->getSubdetectorHitNumbers()[3]+trk->getSubdetectorHitNumbers()[4];
+	if(nhitinner <= _NHitsInner) {
+	  continue;
+	}
+      }
+
+      if(_NHitsOuter>0 ) {
+	int nhitouter = trk->getSubdetectorHitNumbers()[5]+trk->getSubdetectorHitNumbers()[6];
+	if(nhitouter <= _NHitsOuter) {
+	  continue;
+	}
+      }
+
+      float pt=fabs(0.3*_Bz/trk->getOmega()/1000);
+      if(_MinPt>0 && pt< _MinPt) {
+	continue;
+      }
+
+      OutTrackCollection->addElement(trk);
+    }
 
   // Save output track collection
   evt->addCollection(OutTrackCollection, _OutTrackCollection);  
