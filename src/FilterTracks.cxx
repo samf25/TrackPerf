@@ -112,7 +112,7 @@ void FilterTracks::processEvent( LCEvent * evt )
       if(_NHitsTotal>0 && nhittotal <= _NHitsTotal ) {
 	continue;
       }
-118
+
       const EVENT::IntVec& subdetectorHitNumbers = trk->getSubdetectorHitNumbers();
       if(_NHitsVertex>0 ) {
 	int nhitvertex = trk->getSubdetectorHitNumbers()[1]+trk->getSubdetectorHitNumbers()[2];
