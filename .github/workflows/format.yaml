@@ -1,0 +1,19 @@
+name: test-clang-format
+
+on: [push]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - 'src'
+          - 'TrackPerf'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: DoozyX/clang-format-lint-action@v0.13
+        with:
+          source: ${{ matrix.path }}
+          clangFormatVersion: 13
+
