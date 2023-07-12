@@ -1,0 +1,36 @@
+BasedOnStyle: Google
+
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<T.*\.h>'
+    Priority:        1
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<DD4hep/.*\.h>'
+    Priority:        2
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<Acts/.*\.h>'
+    Priority:        3
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<EVENT/.*\.h>'
+    Priority:        4
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<IMPL/.*\.h>'
+    Priority:        5
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<UTIL/.*\.h>'
+    Priority:        6
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '^<.*'
+    Priority:        7
+    SortPriority:    0
+    CaseSensitive:   false
+  - Regex:           '.*'
+    Priority:        8
+    SortPriority:    0
+    CaseSensitive:   false
