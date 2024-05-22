@@ -38,19 +38,13 @@ FilterTracks::FilterTracks() : Processor("FilterTracks") {
   registerProcessorParameter("MinPt", "Minimum transverse momentum", _MinPt,
                              _MinPt);
 
-  registerInputCollection( LCIO::TRACK,
-		  	   "InputTrackCollectionName" ,
-			   "Name of the input collection",
-			   _InTrackCollection,
-		           _InTrackCollection
-		 	    );
+  registerInputCollection(LCIO::TRACK, "InputTrackCollectionName",
+                          "Name of the input collection", _InTrackCollection,
+                          _InTrackCollection);
 
-  registerOutputCollection( LCIO::TRACK,
-		  	   "OutputTrackCollectionName" ,
-			    "Name of output collection",
-			    _OutTrackCollection,
-			    _OutTrackCollection
-			    );
+  registerOutputCollection(LCIO::TRACK, "OutputTrackCollectionName",
+                           "Name of output collection", _OutTrackCollection,
+                           _OutTrackCollection);
 
   registerOutputCollection(LCIO::TRACK, "OutTrackCollection",
                            "Name of output collection", _OutTrackCollection,
