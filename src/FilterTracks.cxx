@@ -39,12 +39,12 @@ FilterTracks::FilterTracks() : Processor("FilterTracks") {
                              _MinPt);
 
   registerInputCollection(LCIO::TRACK, "InputTrackCollectionName",
-			   "Name of the input collection", _InTrackCollection,
-			   _InTrackCollection);
+                          "Name of the input collection", _InTrackCollection,
+                          _InTrackCollection);
 
   registerOutputCollection(LCIO::TRACK, "OutputTrackCollectionName",
-			    "Name of output collection", _OutTrackCollection,
-			    _OutTrackCollection);
+                           "Name of output collection", _OutTrackCollection,
+                           _OutTrackCollection);
 
   registerOutputCollection(LCIO::TRACK, "OutTrackCollection",
                            "Name of output collection", _OutTrackCollection,
