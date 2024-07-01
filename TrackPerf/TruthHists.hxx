@@ -19,6 +19,8 @@ class TruthHists {
   // Fill histograms with a single track
   void fill(const EVENT::MCParticle* track);
 
+  void effi(const EVENT::MCParticle* track);
+
  private:
   //! Reconstructed track pT
   TH1* h_pt;
@@ -26,5 +28,6 @@ class TruthHists {
   TH1* h_phi;
   TH1* h_vtr;
   TH1* h_vtz;
-};
+  TEfficiency* h_effpt;
+  TEfficiency* h_effeta;
 }  // namespace TrackPerf
