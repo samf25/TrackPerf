@@ -2,6 +2,7 @@
 
 #include <TH1.h>
 #include <TH2.h>
+#include <TEfficiency.h>
 
 namespace EVENT {
 class Track;
@@ -19,6 +20,8 @@ class TrackHists {
 
   // Fill histograms with a single track
   void fill(const EVENT::Track* track);
+
+  void effi(const EVENT::Track* track, bool passed);
 
  private:
   //! magnetic field to use for curvature -> pT conversion
@@ -40,5 +43,6 @@ class TrackHists {
   TH1* h_nhit4;
   TH1* h_nhit5;
   TH1* h_nhit6;
-};
+  TEfficiency* h_effpt;
+  TEfficiency* h_effeta;};
 }  // namespace TrackPerf

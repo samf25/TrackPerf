@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TH1.h>
+#include <TEfficiency.h>
 
 namespace EVENT {
 class MCParticle;
@@ -19,7 +20,7 @@ class TruthHists {
   // Fill histograms with a single track
   void fill(const EVENT::MCParticle* track);
 
-  void effi(const EVENT::MCParticle* track);
+  void effi(const EVENT::MCParticle* track, bool passed);
 
  private:
   //! Reconstructed track pT
@@ -30,4 +31,5 @@ class TruthHists {
   TH1* h_vtz;
   TEfficiency* h_effpt;
   TEfficiency* h_effeta;
+};
 }  // namespace TrackPerf
