@@ -2,10 +2,12 @@
 
 #include <TH1.h>
 #include <TEfficiency.h>
+#include <string>
 
-namespace EVENT {
-class MCParticle;
-}
+#include <edm4hep/MCParticle.h>
+
+#include <GaudiKernel/ITHistSvc.h>
+#include <GaudiKernel/ServiceHandle.h>
 
 namespace TrackPerf {
 //! Histograms for reconstructed tracks
@@ -15,12 +17,12 @@ class TruthHists {
   TruthHists& operator=(const TruthHists&) = delete;
 
   //! Initialize empty histograms
-  TruthHists();
+  TruthHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bool effi);
 
   // Fill histograms with a single track
-  void fill(const EVENT::MCParticle* track);
+  void fill(const edm4hep::MCParticle* track);
 
-  void effi(const EVENT::MCParticle* track, bool passed);
+  void effi(const edm4hep::MCParticle* track, bool passed);
 
  private:
   //! Reconstructed track pT

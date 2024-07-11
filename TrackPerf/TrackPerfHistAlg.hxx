@@ -1,6 +1,16 @@
 #pragma once
 
+
+// Gaudi
 #include <GaudiAlg/GaudiAlgorithm.h>
+#include <GaudiAlg/Consumer.h>
+#include <k4FWCore/BaseClass.h>
+
+// k4FWCore
+#include <k4WFCore/DataHandle.h>
+
+#include <tuple>
+
 #include <GaudiKernel/ITHistSvc.h>
 #include <TH1.h>
 #include <memory>
@@ -12,32 +22,20 @@ class ResoHists;
 }  // namespace TrackPerf
 
 //! Creates a simple column wise ntuple in a HistProc from LCIO collections.
-class TrackPerfHistAlg : public GaudiAlgorithm {
+class TrackPerfHistAlg : public Gaudi::Functional::Consumer<(
+		const edm4hep::MCPatricleCollection,
+		const edm4hep::TrackCollection,
+		const edm4hep::MCRecoParticleAssociationCollection), BaseClass_t> {
 	public:
 		// Constructor
 		TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator);
-		// Destructor
-		virtual ~TrackPerfHistAlg();
 
-		// Initialization method
-		virtual StatusCode initialize();
-
-		// Execute method (called for every event)
-		virtual StatusCode execute();
-
-		// Called after data processing for clean up.
-		virtual StatusCode finalize();
+	 	StatusCode initialize();
+		void operator()(const edm4hep::MCPatricleCollection mcParticles,
+                	const edm4hep::TrackCollection tracks,
+                	const edm4hep::MCRecoParticleAssociationCollection trackToMCRelations) const;
 
 	private:
-		// Track Collection
-		std::string m_trkColName{};
-
-		// MC Particle Collection
-		std::string m_mcpColName{};
-
-		// Track to MC truth match collection
-		std::string m_trkMatchColName{};
-
 		// Determination of good vs bad match
 		float m_matchProb = 0.5;
 
@@ -53,5 +51,3 @@ class TrackPerfHistAlg : public GaudiAlgorithm {
 		TH1* m_hnumber_of_fakes;
 		TH1* m_hnumber_of_tracks;
 };
-
-DECLARE_COMPONENT(TrackPerfHistAlg)

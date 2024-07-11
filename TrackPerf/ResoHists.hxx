@@ -3,11 +3,13 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TVector2.h>
+#include <string>
 
-namespace EVENT {
-class Track;
-class MCParticle;
-}  // namespace EVENT
+#include <edm4hep/Track.h>
+#include <edm4hep/MCParticle.h>
+
+#include <GaudiKernel/ITHistSvc.h>
+#include <GaudiKernel/ServiceHandle.h>
 
 namespace TrackPerf {
 //! Histograms for reconstructed tracks
@@ -17,10 +19,10 @@ class ResoHists {
   ResoHists& operator=(const ResoHists&) = delete;
 
   //! Initialize empty histograms
-  ResoHists();
+  ResoHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bool effi);
 
   // Fill histograms with a single track
-  void fill(const EVENT::Track* track, const EVENT::MCParticle* particle);
+  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle);
 
  private:
   //! magnetic field to use for curvature -> pT conversion

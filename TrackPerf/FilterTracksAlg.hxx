@@ -1,37 +1,31 @@
 #pragma once
 
+// edm4hep
+#include <edm4hep/TrackCollection.h>
+
+// Gaudi
 #include <GaudiAlg/GaudiAlgorithm.h>
-#include <GaudiKernel/ITHistSvc.h>
-#include <TH1.h>
+#include <GaudiAlg/Transformer.h>
+#include <k4FWCore/BaseClass.h>
+
+// k4FWCore
+#include <k4WFCore/DataHandle.h>
+
 #include <memory>
 
 namespace TrackPerf {}
 
-class FilterTracksAlg : public GaudiAlgorithm {
+class FilterTracksAlg : public Gaudi::Functional::Transformer<edm4hep::TrackCollection>(const edm4hep::TrackCollection&) {
 	public:
 		// Constructor
 		FilterTracksAlg(const std::string& name, ISvcLocator* pSvcLocator);
-		// Destructor
-		virtual ~FilterTracksAlg();
 
-		// Initialization method
-		virtual StatusCode initialize();
+		StatusCode initialize();
 
-		// Execute method (called for every event)
-		virtual StatusCode execute();
-
-		// Called after data processing for clean up.
-		virtual StatusCode finalize();
+		edm4hep::TrackCollection operator() const;
 
 	private:
 		void buildBfield();
-
-
-		//! Input track collection
-		std::string m_InTrackCollection{};
-
-		//! Output track collection
-		std::string m_OutTrackCollection{};
 
 		//! Cut off for total number of hits
 		int m_NHitsTotal = 7;
@@ -48,5 +42,3 @@ class FilterTracksAlg : public GaudiAlgorithm {
 		//! Default magnetic field value
 		float m_Bz = 3.57;  // units Tesla
 };
-
-DECLARE_COMPONENT(FilterTracksAlg)

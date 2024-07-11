@@ -1,26 +1,24 @@
 #include "FilterTracksAlg.hxx"
+
 #include <DD4hep/Detector.h>
-#include <edm4hep/TrackCollection.h>
+
 #include <edm4hep/Track.h>
-#include <GaudiKernel/ITHistSvc.h>
-#include <GaudiKernel/ServiceHandle.h>
+
 #include <math.h>
 
+DECLARE_COMPONANT(FilterTracksAlg)
+
 // Implement constructor
-FilterTracksAlg::FilterTracksAlg(const std::string& name, ISvcLocator* pScvLocator) : GaudiAlgorithm(name, pSvcLocator) {
+FilterTracksAlg::FilterTracksAlg(const std::string& name, ISvcLocator* pScvLocator) : Transformer(name, pSvcLocator,
+		KeyValue("InputTrackCollectionName", "Tracks"),
+		KeyValue("OutputTrackCollectionName", "FilteredTracks")) {
 	declareProperty("NHitsTotal", m_NHitsTotal, "Minimum number of hits on track");
 	declareProperty("NHitsVertex", m_NHitsVertex, "Minimum number of hits on vertex detector");
 	declareProperty("NHitsInner", m_NHitsInner, "Minimum number of hits on inner tracker");
 	declareProperty("NHitsOuter", m_NHitsOuter, "Minimum number of hits on outer tracker");
 	declareProperty("MinPt", m_MinPt, "Minimum transverse momentum");
-	declareProperty("InputTrackCollectionName", m_InTrackCollection, "Name of the input collection");
-	declareProperty("OutputTrackCollectionName", m_OutTrackCollection, "Name of the output collection");
 }
 
-// Implement destructor
-FilterTracksAlg::~FilterTracksAlg() {}
-
-// Implement initialize
 StatusCode FilterTracksAlg::initialize() {
 	// set things up
 	info() << "FilterTracksAlg Initialization" << endmsg;
@@ -41,9 +39,8 @@ void FilterTracksAlg::buildBfield() {
 }
 
 // Implement execute
-StatusCode FilterTracksAlg::execute() {
-	// Retrieve input and create output collections
-	const edm4hep::TrackCollection tracks = get<edm4hep::TrackCollection>(m_InTrackCollection);
+edm4hep::TrackCollection FilterTracksAlg::operator() (const edm4hep::TrackCollection& tracks) const{
+	// Create output collection
 	edm4hep::TrackCollection outputTracks = std::make_unique<edm4hep::TrackCollection>();
 
 	// Filter tracks
@@ -66,14 +63,5 @@ StatusCode FilterTracksAlg::execute() {
 		outputTracks->push_back(trk); // add tracks that pass all tests
 	}
 
-	// Save output track collection
-	put(m_OutTrackCollection, std::move(outputTracks));
-
-	return StatusCode::SUCCESS;
-}
-
-// Implement finalize
-StatusCode FilterTracksAlg:finalize() {
-	info() << "FilterTracksAlg Finalize" << endmsg;
-	return StatusCode::SUCCESS;
+	return outputTracks;
 }

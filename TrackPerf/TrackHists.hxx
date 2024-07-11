@@ -3,10 +3,12 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TEfficiency.h>
+#include <string>
 
-namespace EVENT {
-class Track;
-}
+#include <edm4hep/Track.h>
+
+#include <GaudiKernel/ITHistSvc.h>
+#include <GaudiKernel/ServiceHandle.h>
 
 namespace TrackPerf {
 //! Histograms for reconstructed tracks
@@ -16,12 +18,12 @@ class TrackHists {
   TrackHists& operator=(const TrackHists&) = delete;
 
   //! Initialize empty histograms
-  TrackHists();
+  TrackHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bool effi);
 
   // Fill histograms with a single track
-  void fill(const EVENT::Track* track);
+  void fill(const edm4hep::Track* track);
 
-  void effi(const EVENT::Track* track, bool passed);
+  void effi(const edm4hep::Track* track, bool passed);
 
  private:
   //! magnetic field to use for curvature -> pT conversion

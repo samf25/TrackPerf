@@ -1,6 +1,5 @@
 #include "TrackPerfHistAlg.hxx"
 
-#include <GaudiKernel/MsgStream.h>
 #include <GaudiKernel/ITHistSvc.h>
 #include <GaudiKernel/ServiceHandle.h>
 #include <TH1.h>
@@ -10,16 +9,15 @@
 #include "TrackPerf/TrackHists.hxx"
 #include "TrackPerf/TruthHists.hxx"
 
+DECLARE_COMPONENT(TrackPerHistAlg)
+
 // Implement Constructor
-TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : GaudiAlgorithm(name, pSvcLocator) {
-	declareProperty("TrackCollection", m_trkColName, "Name of the Track collection");
-	declareProperty("MCParticleCollection", m_mcpColName, "Name of the MCParticle collection");
-	declareProperty("MCTrackRelationCollection", m_trkMatchColName, "Name of LCRelation collection with track to MC matching");
+TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : Gaudi::Functional::Consumer(name, pSvcLocator, {
+		KeyValue("TrackCollection", "Tracks"),
+		KeyValue("MCParticleCollection", "MCParticle"),
+	       	KeyValue("MCTrackRelationCollection", "MCTrackRelations"))	{
 	declareProperty("MatchProb", m_matchProb, "Minimum matching probability to be considered a good track-MC match.");
 }
-
-// Implement Destructor
-TrackPerfHistAlg::~TrackPerfHistAlg() {}
 
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
@@ -31,30 +29,28 @@ StatusCode TrackPerfHistAlg::initialize() {
 	}
 
 	// Make Histograms
-	m_allTracks = std::make_shared<TrackPerf::TrackHists>();
-	m_allTruths = std::make_shared<TrackPerf::TruthHists>();
-	m_hNumber_of_tracks = new TH1F("hNumber_of_tracks", "Number of seeds/tracks;Events", 100, 0, 300000);
-	histSvc->regHist("/histos/hNumber_of_tracks", m_hNumber_of_tracks);
+	m_allTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "all", false);
+	m_allTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "all", false);
+	m_hNumber_of_tracks = new TH1F("Number_of_tracks", "Number of seeds/tracks;Events", 100, 0, 300000);
+	histSvc->regHist("/histos/all/Number_of_tracks", m_hNumber_of_tracks);
 
-	m_realTracks = std::make_shared<TrackPerf::TrackHists>();
-	m_realTruths = std::make_shared<TrackPerf::TruthHists>();
-	m_realReso = std::make_shared<TrackPerf::ResoHists>();
-	m_fakeTracks = std::make_shared<TrackPerf::TrackHists>();
-	m_hNumber_of_fakes = new TH1F("hNumber_of_fakes", "Number of fake tracks;Events", 100, 0, 300000);
-	histSvc->regHist("/histos/hNumber_of_fakes", m_hNumber_of_fakes);
+	m_realTracks = std::make_shared<TrackPerf::TrackHists>(HistSvc, "real", false);
+	m_realTruths = std::make_shared<TrackPerf::TruthHists>(HistSvc, "real", true);
+	m_realReso = std::make_shared<TrackPerf::ResoHists>(HistSvc, "real");
+	m_fakeTracks = std::make_shared<TrackPerf::TrackHists>(HistSvc, "fake", true);
+	m_hNumber_of_fakes = new TH1F("Number_of_fakes", "Number of fake tracks;Events", 100, 0, 300000);
+	histSvc->regHist("/histos/fake/Number_of_fakes", m_hNumber_of_fakes);
 
-	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>();
+	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(HistSvc, "unmt", false);
 	
 	return StatusCode::SUCCESS;
 }
 
-// Implement Execute (To be run on each event -- the workhorse)
-StatusCode TrackPerfHistAlg::execute() {
-	// Access data from EDM4hep (If intially input is in LCIO format,m convert using lcio2edm4hep executable that comes with key4hep)
-	const edm4hep::MCParticleCollection			mcParticles = get<edm4hep::MCParticleCollection>(m_mcpColName);
-	const edm4hep::TrackCollection				tracks = get<edm4hep::TrackCollection>(m_trkColName);
-	const edm4hep::MCRecoTrackParticleAssociationCollection	trackToMCRelations = get<edm4hep::MCRecoParticleAssociationCollection>(m_trkMatchColName);
-
+// Implement operator (To be run on each event -- the workhorse)
+void TrackPerfHistAlg::operator()(
+			const edm4hep::MCPatricleCollection mcParticles,
+                        const edm4hep::TrackCollection tracks,
+                        const edm4hep::MCRecoParticleAssociationCollection trackToMCRelations) const{
 	// MC Particles
 	std::set<const edm4hep::MCParticle*> mcpSet;
 	for (const MCParticle& mcp : *mcParticles) {
@@ -111,10 +107,5 @@ StatusCode TrackPerfHistAlg::execute() {
 	}
 	m_hNumber_of_fakes->Fill(trkSet.size());
 
-	return StatusCode::SUCCESS;
-}
-
-// Implement finalize
-StatusCode TrackPerfHistAlg::finalize() {
 	return StatusCode::SUCCESS;
 }
