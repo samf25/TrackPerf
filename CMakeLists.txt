@@ -1,40 +1,19 @@
 ########################################################
 # cmake file for building Marlin TrackPerf Package
-# @author Karol Krizka
+# @author Karol Krizka, Samuel Ferraro
 CMAKE_MINIMUM_REQUIRED(VERSION 3.15 FATAL_ERROR)
 ########################################################
 
 # project name
-PROJECT( TrackPerf )
-
-# project version
-SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
-SET( ${PROJECT_NAME}_VERSION_MINOR 1 )
-SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
-
-# extra options
-OPTION(WITH_PARQUET "Enable output to Apache Parquet." OFF)
+PROJECT( TrackPerf VERSION 0.2.0 )
 
 ### DEPENDENCIES ############################################################
 
-FIND_PACKAGE( ILCUTIL REQUIRED COMPONENTS ILCSOFT_CMAKE_MODULES )
-
-FIND_PACKAGE( Marlin 1.0 REQUIRED ) # minimum required Marlin version
-
+FIND_PACKAGE( Gaudi REQUIRED )
+FIND_PACKAGE( EDM4HEP REQUIRED )
 FIND_PACKAGE( DD4hep REQUIRED COMPONENTS DDCore )
-
-FIND_PACKAGE( ROOT REQUIRED) ## COMPONENTS Hist)
-
-FIND_PACKAGE( RAIDA REQUIRED )
-
-IF(WITH_PARQUET)
-  FIND_PACKAGE( Arrow  REQUIRED )
-
-  GET_FILENAME_COMPONENT(Arrow_SEARCH_DIR ${Arrow_CONFIG} DIRECTORY)
-  FIND_PACKAGE(Parquet REQUIRED HINTS ${Arrow_SEARCH_DIR})
-ELSE()
-  MESSAGE("Parquet output disabled.")
-ENDIF()
+FIND_PACKAGE( ROOT REQUIRED )
+FIND_PACKAGE( k4FWCore REQUIRED )
 
 ### DOCUMENTATION ###########################################################
 
@@ -50,33 +29,30 @@ ENDIF()
 
 # Main library with Processors
 ADD_LIBRARY(TrackPerf SHARED
-  ./src/TrackPerfHistProc.cxx
-  ./src/TrackHists.cxx
-  ./src/TruthHists.cxx
-  ./src/FilterTracks.cxx
-  ./src/ResoHists.cxx
+	./src/TrackPerfHistAlg.cxx
+	./src/TrackHists.cxx
+	./src/TruthHists.cxx
+	./src/FilterTracks.cxx
+	./src/ResoHists.cxx
   )
 TARGET_INCLUDE_DIRECTORIES(TrackPerf
-  PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  PRIVATE
-  ${Marlin_INCLUDE_DIRS}
-  ${RAIDA_INCLUDE_DIRS}
-  ${ROOT_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(TrackPerf
-  PRIVATE
-  ${RAIDA_LIBRARIES}
-  ROOT::Hist
-  ${ROOT_LIBRARIES} 
-  DD4hep::DDCore
-  )
-TARGET_COMPILE_DEFINITIONS(TrackPerf
-  PRIVATE
-  ${RAIDA_DEFINITIONS})
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}
+	PRIVATE
+	${Gaudi_INCLUDE_DIRS}
+	${EDM4HEP_INCLUDE_DIRS}
+	${ROOT_INCLUDE_DIRS}
+	${DD4hep_INCLUDE_DIRS}
+	${k4FWCore_INCLUDE_DIRS}
+)
 
-IF(WITH_PARQUET)
-  TARGET_SOURCES(TrackPerf PRIVATE
-    ./src/TrackPerfParquet.cxx
-    ./src/TrackPerfFile.cxx)
-  TARGET_LINK_LIBRARIES(TrackPerf PRIVATE LCParquet)
-ENDIF()
+TARGET_LINK_LIBRARIES(TrackPerf
+	PRIVATE
+	Gaudi::GaudiKernel
+	Gaudi::GaudiAlg
+	EDM4HEP::edm4hep
+	ROOT::Hist
+	${ROOT_LIBRARIES} 
+	DD4hep::DDCore
+	k4FWCore::k4FWCore
+)
