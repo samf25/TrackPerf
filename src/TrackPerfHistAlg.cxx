@@ -48,9 +48,9 @@ StatusCode TrackPerfHistAlg::initialize() {
 
 // Implement operator (To be run on each event -- the workhorse)
 void TrackPerfHistAlg::operator()(
-			const edm4hep::MCPatricleCollection mcParticles,
+			const edm4hep::MCParticleCollection mcParticles,
                         const edm4hep::TrackCollection tracks,
-                        const edm4hep::MCRecoParticleAssociationCollection trackToMCRelations) const{
+                        const edm4hep::MCRecoTrackParticleAssociationCollection trackToMCRelations) const{
 	// MC Particles
 	std::set<const edm4hep::MCParticle*> mcpSet;
 	for (const MCParticle& mcp : *mcParticles) {

@@ -1,5 +1,9 @@
 #pragma once
 
+// edm4hep
+#include <edm4hep/MCParticleCollection.h>
+#include <edm4hep/TrackCollection.h>
+#include <edm4hep/MCRecoTrackParticleCollection.h>
 
 // Gaudi
 #include <GaudiAlg/GaudiAlgorithm.h>
@@ -23,17 +27,17 @@ class ResoHists;
 
 //! Creates a simple column wise ntuple in a HistProc from LCIO collections.
 class TrackPerfHistAlg : public Gaudi::Functional::Consumer<(
-		const edm4hep::MCPatricleCollection,
+		const edm4hep::MCParticleCollection,
 		const edm4hep::TrackCollection,
-		const edm4hep::MCRecoParticleAssociationCollection), BaseClass_t> {
+		const edm4hep::MCRecoTrackParticleAssociationCollection), BaseClass_t> {
 	public:
 		// Constructor
 		TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator);
 
 	 	StatusCode initialize();
-		void operator()(const edm4hep::MCPatricleCollection mcParticles,
+		void operator()(const edm4hep::MCParticleCollection mcParticles,
                 	const edm4hep::TrackCollection tracks,
-                	const edm4hep::MCRecoParticleAssociationCollection trackToMCRelations) const;
+                	const edm4hep::MCRecoTrackParticleAssociationCollection trackToMCRelations) const;
 
 	private:
 		// Determination of good vs bad match
