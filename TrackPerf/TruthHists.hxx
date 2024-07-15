@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TH1.h>
+#include <TEfficiency.h>
 
 namespace EVENT {
 class MCParticle;
@@ -30,4 +31,5 @@ class TruthHists {
   TH1* h_vtz;
   TEfficiency* h_effpt;
   TEfficiency* h_effeta;
+  TEfficiency* h_efftheta;
 }  // namespace TrackPerf
