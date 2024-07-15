@@ -49,7 +49,7 @@ TARGET_INCLUDE_DIRECTORIES(TrackPerf
 TARGET_LINK_LIBRARIES(TrackPerf
 	PRIVATE
 	Gaudi::GaudiKernel
-	Gaudi::GaudiAlg
+	Gaudi::GaudiAlgLib
 	EDM4HEP::edm4hep
 	ROOT::Hist
 	${ROOT_LIBRARIES} 
