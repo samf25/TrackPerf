@@ -158,6 +158,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
       if (trkSet.find(trk) != trkSet.end()) {
         _realTracks->fill(trk);
         _realTruths->fill(mcp);
+	_realTruths->effi(mcp, true);
         _realReso->fill(trk, mcp);
 
         mcpSet.erase(mcp);
@@ -170,6 +171,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // Save unmatched objects
   for (const EVENT::MCParticle* mcp : mcpSet) {
     _unmtTruths->fill(mcp);
+    _realTruths->effi(mcp,false);
   }
   for (const EVENT::Track* trk : trkSet) {
     _fakeTracks->fill(trk);

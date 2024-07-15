@@ -14,6 +14,9 @@ TruthHists::TruthHists() {
                    100, -10, 10);
   h_vtz = new TH1F("truth_vtz", ";Particle vtx_{z} [mm]; Particles [/0.2 mm]",
                    100, -10, 10);
+  h_effpt = new TEfficiency("pt_vs_eff", ";Truth pT [GeV]; Efficiency");
+  h_effeta = new TEfficiency("eta_vs_eff", ";Truth eta; Efficiency");
+  h_efftheta = new TEfficiency("theta_vs_eff", ";Truth theta; Efficiency");
 }
 
 void TruthHists::fill(const EVENT::MCParticle* particle) {
@@ -31,4 +34,15 @@ void TruthHists::fill(const EVENT::MCParticle* particle) {
   double vtr = std::sqrt(std::pow(vtx[0], 2) + std::pow(vtx[1], 2));
   h_vtr->Fill(vtr);
   h_vtz->Fill(vtx[2]);
+}
+
+void TruthHists::effi(const EVENT::MCParticle* particle, bool passed) {
+	const double* mom = particle->getMomentum();
+	double pt = std::sqrt(std::pow(mom[0], 2) + std::pow(mom[1], 2));
+	h_effpt->Fill(passed, pt);
+
+	double eta = std::atan2(mom[2], std::sqrt(std::pow(pt, 2) + std::pow(mom[2], 2)));
+  	h_effeta->Fill(passed, eta);
+	double theta = std::atan2(pt, mom[2]);
+	h_efftheta->Fill(passed, theta);
 }
