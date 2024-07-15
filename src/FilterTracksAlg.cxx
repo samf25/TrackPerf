@@ -15,7 +15,6 @@ FilterTracksAlg::FilterTracksAlg(const std::string& name, ISvcLocator* pScvLocat
 
 StatusCode FilterTracksAlg::initialize() {
 	// set things up
-	info() << "FilterTracksAlg Initialization" << endmsg;
 	buildBfield();
 
 	return StatusCode::SUCCESS;

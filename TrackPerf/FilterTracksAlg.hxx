@@ -6,10 +6,11 @@
 // Gaudi
 #include <GaudiAlg/GaudiAlgorithm.h>
 #include <GaudiAlg/Transformer.h>
+#include <Gaudi/Property.h>
 #include <k4FWCore/BaseClass.h>
 
 // k4FWCore
-#include <k4WFCore/DataHandle.h>
+#include <k4FWCore/DataHandle.h>
 
 #include <memory>
 

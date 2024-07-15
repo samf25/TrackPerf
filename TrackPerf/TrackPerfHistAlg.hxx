@@ -8,10 +8,11 @@
 // Gaudi
 #include <GaudiAlg/GaudiAlgorithm.h>
 #include <GaudiAlg/Consumer.h>
+#include <Gaudi/Property.h>
 #include <k4FWCore/BaseClass.h>
 
 // k4FWCore
-#include <k4WFCore/DataHandle.h>
+#include <k4FWCore/DataHandle.h>
 
 #include <tuple>
 
@@ -25,11 +26,10 @@ class TruthHists;
 class ResoHists;
 }  // namespace TrackPerf
 
-//! Creates a simple column wise ntuple in a HistProc from LCIO collections.
-class TrackPerfHistAlg : public Gaudi::Functional::Consumer<(
+struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<(
 		const edm4hep::MCParticleCollection,
 		const edm4hep::TrackCollection,
-		const edm4hep::MCRecoTrackParticleAssociationCollection), BaseClass_t> {
+		const edm4hep::MCRecoTrackParticleAssociationCollection)> {
 	public:
 		// Constructor
 		TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator);
