@@ -41,7 +41,7 @@ class TrackPerfHistAlg : public Gaudi::Functional::Consumer<(
 
 	private:
 		// Determination of good vs bad match
-		float m_matchProb = 0.5;
+		Gaudi::Property<float> m_matchProb{this, "MatchProb", 0.5, "Minimum matching probability to be considered a good track-MC match."};
 
 		// Histograms
 		std::shared_ptr<TrackPerf::TrackHists> m_allTracks;

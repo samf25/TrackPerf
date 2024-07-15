@@ -28,16 +28,16 @@ class FilterTracksAlg : public Gaudi::Functional::Transformer<edm4hep::TrackColl
 		void buildBfield();
 
 		//! Cut off for total number of hits
-		int m_NHitsTotal = 7;
+		Gaudi::Property<int> m_NHitsTotal{this, "NHitsTotal", 7, "Minimum number of hits on track"};
 		//! Cut off for number of hits in vertex detector (barrel and endcap combined)
-		int m_NHitsVertex = 3;
+		Gaudi::Property<int> m_NHitsVertex{this, "NHitsVertex", 3, "Minimum number of hits on vertex detector"};
 		//! Cut off for number of hits in inner tracker (barrel and endcap combined)
-		int m_NHitsInner = 2;
+		Gaudi::Property<int> m_NHitsInner{this, "NHitsInner", 2, "Minimum number of hits on inner tracker"};
 		//! Cut off for number of hits in outer tracker (barrel and endcap combined)
-		int m_NHitsOuter = 1;
+		Gaudi::Property<int> m_NHitsOuter{this, "NHitsOuter", 1, "Minimum number of hits on outer tracker"};
 
 		//! Cut off for momentum
-		float m_MinPt = 1.0;  // units GeV
+		Gaudi::Property<float> m_MinPt{this, "MinPt", 1.0, "Minimum transverse momentum"};  // units GeV
 
 		//! Default magnetic field value
 		float m_Bz = 3.57;  // units Tesla

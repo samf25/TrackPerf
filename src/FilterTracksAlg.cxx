@@ -11,13 +11,7 @@ DECLARE_COMPONANT(FilterTracksAlg)
 // Implement constructor
 FilterTracksAlg::FilterTracksAlg(const std::string& name, ISvcLocator* pScvLocator) : Transformer(name, pSvcLocator,
 		KeyValue("InputTrackCollectionName", "Tracks"),
-		KeyValue("OutputTrackCollectionName", "FilteredTracks")) {
-	declareProperty("NHitsTotal", m_NHitsTotal, "Minimum number of hits on track");
-	declareProperty("NHitsVertex", m_NHitsVertex, "Minimum number of hits on vertex detector");
-	declareProperty("NHitsInner", m_NHitsInner, "Minimum number of hits on inner tracker");
-	declareProperty("NHitsOuter", m_NHitsOuter, "Minimum number of hits on outer tracker");
-	declareProperty("MinPt", m_MinPt, "Minimum transverse momentum");
-}
+		KeyValue("OutputTrackCollectionName", "FilteredTracks")) {}
 
 StatusCode FilterTracksAlg::initialize() {
 	// set things up

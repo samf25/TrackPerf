@@ -15,9 +15,7 @@ DECLARE_COMPONENT(TrackPerHistAlg)
 TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : Gaudi::Functional::Consumer(name, pSvcLocator, {
 		KeyValue("InputTrackCollectionName", "Tracks"),
 		KeyValue("InputMCParticleCollectionName", "MCParticle"),
-	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations"))	{
-	declareProperty("MatchProb", m_matchProb, "Minimum matching probability to be considered a good track-MC match.");
-}
+	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations"))	{}
 
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
