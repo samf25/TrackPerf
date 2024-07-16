@@ -1,6 +1,7 @@
 #include "TrackPerf/TruthHists.hxx"
 
 #include <EVENT/MCParticle.h>
+#include <EVENT/Track.h>
 
 using namespace TrackPerf;
 
@@ -14,10 +15,12 @@ TruthHists::TruthHists(bool effi) {
                    100, -10, 10);
   h_vtz = new TH1F("truth_vtz", ";Particle vtx_{z} [mm]; Particles [/0.2 mm]",
                    100, -10, 10);
+  h_deltaR = new TH1F("deltaR", ";Delta R;Count", 50, 0, 4);
+
   if (effi) {
 	  h_effpt = new TEfficiency("pt_vs_eff", ";Truth pT [GeV]; Efficiency", 40, 0, 100 );
 	  h_effeta = new TEfficiency("eta_vs_eff", ";Truth eta; Efficiency", 40, -2, 2);
-	  h_efftheta = new TEfficiency("theta_vs_eff", ";Truth theta; Efficiency", 40 , -90, 90);
+
   }
 }
 
@@ -42,8 +45,16 @@ void TruthHists::effi(const EVENT::MCParticle* particle, bool passed) {
 	const double* mom = particle->getMomentum();
 	double pt = std::sqrt(std::pow(mom[0], 2) + std::pow(mom[1], 2));
 	double eta = std::atanh(mom[2] / std::sqrt(std::pow(pt, 2) + std::pow(mom[2], 2)));
-	double theta = std::atan2(pt, mom[2]);
-  	if (fabs(eta) < 2) h_effeta->Fill(passed, eta);
+	if (fabs(eta) < 2) h_effeta->Fill(passed, eta);
 	if (pt > 0.5) h_effpt->Fill(passed, pt);
-	if (pt > 0.5) h_efftheta->Fill(passed, theta);
+}
+
+void TruthHists::deltaR(const EVENT::MCParticle* particle, const EVENT::Track* track) {
+	const double* mom = particle->getMomentum();
+        double pt = std::sqrt(std::pow(mom[0], 2) + std::pow(mom[1], 2));
+        double eta = std::atanh(mom[2] / std::sqrt(std::pow(pt, 2) + std::pow(mom[2], 2)));
+        double trackEta = -std::log(std::tan((1.57079632679 - std::atan(track->getTanLambda()))/2));
+        double phi = std::atan(mom[1] / mom[0]);
+        double trackPhi = track->getPhi();
+        if (fabs(eta) < 2 && pt > 0.5) h_deltaR->Fill(std::sqrt(std::pow(eta-trackEta,2)+std::pow(phi-trackPhi,2)));
 }

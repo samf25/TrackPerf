@@ -159,6 +159,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
         _realTracks->fill(trk);
         _realTruths->fill(mcp);
 	_realTruths->effi(mcp, true);
+	_realTruths->deltaR(mcp, trk);
         _realReso->fill(trk, mcp);
 	_fakeTracks->effi(trk, false);
 
