@@ -16,7 +16,7 @@ TruthHists::TruthHists() {
                    100, -10, 10);
   h_effpt = new TEfficiency("pt_vs_eff", ";Truth pT [GeV]; Efficiency", 40, 0, 100 );
   h_effeta = new TEfficiency("eta_vs_eff", ";Truth eta; Efficiency", 40, -2, 2);
-  h_efftheta = new TEfficiency("theta_vs_eff", ";Truth theta; Efficiency", 40 , 0, 90);
+  h_efftheta = new TEfficiency("theta_vs_eff", ";Truth theta; Efficiency", 40 , -90, 90);
 }
 
 void TruthHists::fill(const EVENT::MCParticle* particle) {
