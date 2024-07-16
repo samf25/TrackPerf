@@ -54,23 +54,23 @@ void TrackPerfHistProc::init() {
   // Create ROOT histograms, with location setup by the above factory
   tree->mkdir("all");
   tree->cd("all");
-  _allTracks = std::make_shared<TrackPerf::TrackHists>();
-  _allTruths = std::make_shared<TrackPerf::TruthHists>();
+  _allTracks = std::make_shared<TrackPerf::TrackHists>(false);
+  _allTruths = std::make_shared<TrackPerf::TruthHists>(false);
   h_number_of_tracks = new TH1F(
       "number_of_tracks", ";Number of seeds/tracks;Events", 100, 0, 300000);
   tree->mkdir("../real");
   tree->cd("../real");
-  _realTracks = std::make_shared<TrackPerf::TrackHists>();
-  _realTruths = std::make_shared<TrackPerf::TruthHists>();
+  _realTracks = std::make_shared<TrackPerf::TrackHists>(false);
+  _realTruths = std::make_shared<TrackPerf::TruthHists>(true);
   _realReso = std::make_shared<TrackPerf::ResoHists>();
   tree->mkdir("../fake");
   tree->cd("../fake");
-  _fakeTracks = std::make_shared<TrackPerf::TrackHists>();
+  _fakeTracks = std::make_shared<TrackPerf::TrackHists>(true);
   h_number_of_fakes = new TH1F("number_of_fakes",
                                ";Number of fake tracks;Events", 100, 0, 300000);
   tree->mkdir("../unmt");
   tree->cd("../unmt");
-  _unmtTruths = std::make_shared<TrackPerf::TruthHists>();
+  _unmtTruths = std::make_shared<TrackPerf::TruthHists>(false);
 }
 
 void TrackPerfHistProc::processRunHeader(LCRunHeader* /*run*/) {}
@@ -160,6 +160,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
         _realTruths->fill(mcp);
 	_realTruths->effi(mcp, true);
         _realReso->fill(trk, mcp);
+	_fakeTracks->effi(trk, false);
 
         mcpSet.erase(mcp);
         trkSet.erase(trk);
@@ -171,10 +172,11 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // Save unmatched objects
   for (const EVENT::MCParticle* mcp : mcpSet) {
     _unmtTruths->fill(mcp);
-    _realTruths->effi(mcp,false);
+    _realTruths->effi(mcp, false);
   }
   for (const EVENT::Track* trk : trkSet) {
     _fakeTracks->fill(trk);
+    _fakeTracks->effi(trk, true);
   }
   h_number_of_fakes->Fill(trkSet.size());
 }

@@ -15,7 +15,7 @@ class TruthHists {
   TruthHists& operator=(const TruthHists&) = delete;
 
   //! Initialize empty histograms
-  TruthHists();
+  TruthHists(bool effi);
 
   // Fill histograms with a single track
   void fill(const EVENT::MCParticle* particle);

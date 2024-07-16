@@ -15,10 +15,11 @@ class TrackHists {
   TrackHists& operator=(const TrackHists&) = delete;
 
   //! Initialize empty histograms
-  TrackHists();
+  TrackHists(bool effi);
 
   // Fill histograms with a single track
   void fill(const EVENT::Track* track);
+  void effi(const EVENT::Track* track, bool passed);
 
  private:
   //! magnetic field to use for curvature -> pT conversion
