@@ -2,6 +2,7 @@
 
 #include <TH1.h>
 #include <TH2.h>
+#include <TEfficiency.h>
 
 namespace EVENT {
 class Track;
@@ -41,5 +42,7 @@ class TrackHists {
   TH1* h_nhit4;
   TH1* h_nhit5;
   TH1* h_nhit6;
+  TEfficiency* h_effpt;
+  TEfficiency* h_effeta;
 };
 }  // namespace TrackPerf
