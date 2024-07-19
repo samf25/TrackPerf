@@ -2,7 +2,6 @@
 
 #include <TH1.h>
 #include <TH2.h>
-#include <TEfficiency.h>
 #include <string>
 
 #include <edm4hep/Track.h>
@@ -44,6 +43,8 @@ class TrackHists {
   TH1* h_nhit4;
   TH1* h_nhit5;
   TH1* h_nhit6;
-  TEfficiency* h_effpt;
-  TEfficiency* h_effeta;};
+  TH1* h_effpt_total;
+  TH1* h_effpt_passed;
+  TH1* h_effeta_total;
+  TH1* h_effeta_passed;};
 }  // namespace TrackPerf

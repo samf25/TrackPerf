@@ -24,14 +24,15 @@ ResoHists::ResoHists(ITHistSvc* histSvc, std::string folder) {
 // Fill Histograms with relavant data
 void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle) {
 	// Get data
-	float track_pt = fabs(0.3 * m_Bz / track->getOmega() / 1000);
-	float track_lambda = std::atan(track->getTanLambda());
+	const edm4hep::TrackState& state = track->getTrackStates(edm4hep::TrackState::AtIP);
+	float track_pt = fabs(0.3 * m_Bz / state.omega / 1000);
+	float track_lambda = std::atan(state.tanLambda);
 
-	const edm4hep::Vector3d mom = particle->getMomentum();
+	const edm4hep::Vector3f& mom = particle->getMomentum();
 	double truth_pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 	double truth_lambda = std::atan2(mom.z, truth_pt);
 	double truth_phi = std::atan2(mom.y, mom.x);
-	double delta_phi = TVector2::Phi_mpi_pi(truth_phi - track->getPhi());
+	double delta_phi = TVector2::Phi_mpi_pi(truth_phi - state.phi);
 
 	// Fill histograms
 	h_track_truth_pt->Fill(track_pt, truth_pt);

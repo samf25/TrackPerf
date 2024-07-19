@@ -1,7 +1,6 @@
 #pragma once
 
 #include <TH1.h>
-#include <TEfficiency.h>
 #include <string>
 
 #include <edm4hep/MCParticle.h>
@@ -30,7 +29,9 @@ class TruthHists {
   TH1* h_phi;
   TH1* h_vtr;
   TH1* h_vtz;
-  TEfficiency* h_effpt;
-  TEfficiency* h_effeta;
+  TH1* h_effpt_total;
+  TH1* h_effpt_passed;
+  TH1* h_effeta_total;
+  TH1* h_effeta_passed;
 };
 }  // namespace TrackPerf

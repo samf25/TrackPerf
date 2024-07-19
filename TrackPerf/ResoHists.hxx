@@ -25,7 +25,7 @@ class ResoHists {
 
  private:
   //! magnetic field to use for curvature -> pT conversion
-  float _Bz = 3.57;
+  float m_Bz = 3.57;
 
   //! Reconstructed track pT
   TH2* h_track_truth_pt;

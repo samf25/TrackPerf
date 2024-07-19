@@ -52,13 +52,19 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	
 	// Efficiency plots
 	if (effi) {
-		h_effpt = new TEfficiency("fake_pt_vs_eff", 
-				"Fake Track Rate vs pT;Truth pT [GeV]; Efficiency", 50, 0, 12);
-		h_effeta = new TEfficiency("fake_eta_vs_eff", 
-				"Fake Track Rate vs Eta;Truth eta; Efficiency", 50, -5, 5);
+		h_effpt_total = new TH1F("eff_fake_pt_total", 
+				"pT of All Tracks for Eff plot;Track pT [GeV];Count", 50, 0, 12);
+		h_effpt_passed = new TH1F("eff_fake_pt_passed",
+				"pT of Fake Tracks for Eff plot;Track pT [GeV];Count", 50, 0, 12);
+		h_effeta_total = new TH1F("eff_fake_eta_total", 
+				"eta of All Tracks for Eff plot;Track eta;Count", 50, -3, 3);
+		h_effeta_passed = new TH1F("eff_fake_eta_passed",
+				"eta of Fake Tracks for Eff plot;Track eta;Count", 50, -3, 3);
 
-		//(void)histSvc->regGraph("/histos/"+folder+"/track", static_cast<TGraph*>(h_effpt));
-		//(void)histSvc->regGraph("/histos/"+folder+"/track", static_cast<TGraph*>(h_effeta));
+		(void)histSvc->regHist("/histos/"+folder+"/track_effpt_total", h_effpt_total);
+		(void)histSvc->regHist("/histos/"+folder+"/track_effpt_passed", h_effpt_passed);
+		(void)histSvc->regHist("/histos/"+folder+"/track_effeta_total", h_effeta_total);
+		(void)histSvc->regHist("/histos/"+folder+"/track_effeta_passed", h_effeta_passed);
 	}
 }
 
@@ -109,6 +115,12 @@ void TrackHists::effi(const edm4hep::Track* track, bool passed) {
 	double pt = fabs(0.3 * m_Bz / state.omega /1000);
 	double eta = -std::log(std::tan((1.57079632679 - std::atan(state.tanLambda))/2));
 	
-	if (fabs(eta) < 2) h_effpt->Fill(passed, pt);
-	if (pt > 0.5) h_effeta->Fill(passed, eta);
+	if (fabs(eta) < 2) {
+		h_effpt_total->Fill(pt);
+		if (passed) { h_effpt_passed->Fill(pt); }
+	}
+	if (pt > 0.5) {
+		h_effeta_total->Fill(eta);
+		if (passed) { h_effeta_passed->Fill(eta); }
+	}
 }

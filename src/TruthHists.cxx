@@ -23,12 +23,20 @@ TruthHists::TruthHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	
 	// Efficiency Plots
 	if (effi) {
-		h_effpt = new TEfficiency("truth_pt_vs_eff", 
-				"Truth Efficiency vs pT;Truth pT [GeV]; Efficiency", 50, 0, 12);
-		h_effeta = new TEfficiency("truth_eta_vs_eff", 
-				"Truth Efficiency vs Eta;Truth eta; Efficiency", 50, -5, 5);
-		//(void)histSvc->regGraph("/histos/"+folder+"/truth_effpt", h_effpt);
-		//(void)histSvc->regGraph("/histos/"+folder+"/truth_effeta", h_effeta);
+		h_effpt_total = new TH1F("eff_fake_pt_total",
+                                "pT of All Truths for Eff plot;Truth pT [GeV];Count", 50, 0, 100);
+                h_effpt_passed = new TH1F("eff_fake_pt_passed",
+                                "pT of Matched Truth for Eff plot;Truth pT [GeV];Count", 50, 0, 100);
+                h_effeta_total = new TH1F("eff_fake_eta_total",
+                                "eta of All Truth for Eff plot;Truth eta;Count", 50, -3, 3);
+                h_effeta_passed = new TH1F("eff_fake_eta_passed",
+                                "eta of Matched Truth for Eff plot;Truth eta;Count", 50, -3, 3);
+                (void)histSvc->regHist("/histos/"+folder+"/truth_effpt_total", h_effpt_total);
+                (void)histSvc->regHist("/histos/"+folder+"/truth_effpt_passed", h_effpt_passed);
+                (void)histSvc->regHist("/histos/"+folder+"/truth_effeta_total", h_effeta_total);
+                (void)histSvc->regHist("/histos/"+folder+"/truth_effeta_passed", h_effeta_passed);
+
+
 	}
 }
 
@@ -60,6 +68,12 @@ void TruthHists::effi(const edm4hep::MCParticle* particle, bool passed) {
 	double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 	double eta = std::atanh(mom.z / std::sqrt(std::pow(pt, 2) + std::pow(mom.z, 2)));
 	
-	if (fabs(eta) < 2) h_effpt->Fill(passed, pt);
-	if (pt > 0.5) h_effeta->Fill(passed, eta);
+	if (fabs(eta) < 2) {
+		h_effpt_total->Fill(pt);
+		if (passed) { h_effpt_passed->Fill(pt); }
+	}
+	if (pt > 0.5) {
+		h_effeta_total->Fill(eta);
+		if (passed) { h_effeta_passed->Fill(eta); }
+	}
 }
