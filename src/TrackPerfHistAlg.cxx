@@ -1,7 +1,6 @@
-#include "TrackPerfHistAlg.hxx"
+#include "TrackPerf/TrackPerfHistAlg.hxx"
 
 #include <GaudiKernel/ITHistSvc.h>
-#include <GaudiKernel/ServiceHandle.h>
 #include <TH1.h>
 #include <TFile.h>
 
@@ -9,51 +8,53 @@
 #include "TrackPerf/TrackHists.hxx"
 #include "TrackPerf/TruthHists.hxx"
 
-DECLARE_COMPONENT(TrackPerHistAlg)
+DECLARE_COMPONENT(TrackPerfHistAlg)
 
 // Implement Constructor
-TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : Gaudi::Functional::Consumer(name, pSvcLocator, {
+TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : Consumer(name, pSvcLocator, {
 		KeyValue("InputTrackCollectionName", "Tracks"),
 		KeyValue("InputMCParticleCollectionName", "MCParticle"),
-	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations"))	{}
+	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations")}) {}
 
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
-	// Get Histogram Service
-	ServiceHandle<ITHistSvc> histSvc("THistSvc", name());
+	// Get Histogram and Data Services
+	ITHistSvc* histSvc;
+	StatusCode sc1 = service("IHistogramSvc", histSvc, true);
+	if ( sc1.isFailure() ) { return StatusCode::FAILURE; }
 
 	// Make Histograms
 	m_allTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "all", false);
 	m_allTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "all", false);
 	m_hNumber_of_tracks = new TH1F("Number_of_tracks", "Number of seeds/tracks;Events", 100, 0, 300000);
-	histSvc->regHist("/histos/all/Number_of_tracks", m_hNumber_of_tracks);
+	(void)histSvc->regHist("/histos/all/Number_of_tracks", m_hNumber_of_tracks);
 
-	m_realTracks = std::make_shared<TrackPerf::TrackHists>(HistSvc, "real", false);
-	m_realTruths = std::make_shared<TrackPerf::TruthHists>(HistSvc, "real", true);
-	m_realReso = std::make_shared<TrackPerf::ResoHists>(HistSvc, "real");
-	m_fakeTracks = std::make_shared<TrackPerf::TrackHists>(HistSvc, "fake", true);
+	m_realTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "real", false);
+	m_realTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "real", true);
+	m_realReso = std::make_shared<TrackPerf::ResoHists>(histSvc, "real");
+	m_fakeTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "fake", true);
 	m_hNumber_of_fakes = new TH1F("Number_of_fakes", "Number of fake tracks;Events", 100, 0, 300000);
-	histSvc->regHist("/histos/fake/Number_of_fakes", m_hNumber_of_fakes);
+	(void)histSvc->regHist("/histos/fake/Number_of_fakes", m_hNumber_of_fakes);
 
-	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(HistSvc, "unmt", false);
+	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "unmt", false);
 	
 	return StatusCode::SUCCESS;
 }
 
 // Implement operator (To be run on each event -- the workhorse)
 void TrackPerfHistAlg::operator()(
-			const edm4hep::MCParticleCollection mcParticles,
-                        const edm4hep::TrackCollection tracks,
-                        const edm4hep::MCRecoTrackParticleAssociationCollection trackToMCRelations) const{
+			const edm4hep::MCParticleCollection& mcParticles,
+                        const edm4hep::TrackCollection& tracks,
+                        const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const{
 	// MC Particles
 	std::set<const edm4hep::MCParticle*> mcpSet;
-	for (const MCParticle& mcp : *mcParticles) {
+	for (const auto& mcp : mcParticles) {
 		if (mcp.getGeneratorStatus() != 1) continue;
 		if (mcp.getCharge() == 0) continue;
 		if (mcp.isDecayedInTracker()) continue;
 
 		// Tracker Acceptance
-		const edm4hep::Vector3d& mom = mcp.getMomentum();
+		const edm4hep::Vector3f& mom = mcp.getMomentum();
 		double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 		double lambda = std::atan2(mom.z, pt);
 		if (fabs(lambda) > 75. / 180 * M_PI) continue;
@@ -64,16 +65,19 @@ void TrackPerfHistAlg::operator()(
 
 	// Tracks
 	std::set<const edm4hep::Track*> trkSet;
-	for (const Track& trk : *tracks) {
+	for (const auto& trk : tracks) {
 		trkSet.insert(&trk);
 		m_allTracks->fill(&trk);
 	}
 	m_hNumber_of_tracks->Fill(trkSet.size());
 
 	// Loop over MC Relations and save matched objects
-	for (const MCRecoTrackParticleAssociation& rel : *trackToMCRelations) {
-		const MCParticle* mcp = rel.getSim();
-		const Track* trk = rel.getRec();
+	for (const auto& rel : trackToMCRelations) {
+		const edm4hep::MCParticle mcpObj = rel.getSim();
+		const edm4hep::MCParticle* mcp = &mcpObj;
+		const edm4hep::Track trkObj = rel.getRec();
+		const edm4hep::Track* trk = &trkObj;
+
 		
 		if (mcpSet.count(mcp) == 0) continue; // Truth particle not accepted
 		if (rel.getWeight() > m_matchProb) {
@@ -100,6 +104,4 @@ void TrackPerfHistAlg::operator()(
 		m_fakeTracks->effi(trk, true);
 	}
 	m_hNumber_of_fakes->Fill(trkSet.size());
-
-	return StatusCode::SUCCESS;
 }

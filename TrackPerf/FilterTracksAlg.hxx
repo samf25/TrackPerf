@@ -16,14 +16,14 @@
 
 namespace TrackPerf {}
 
-class FilterTracksAlg : public Gaudi::Functional::Transformer<edm4hep::TrackCollection>(const edm4hep::TrackCollection&) {
+struct FilterTracksAlg final : Gaudi::Functional::Transformer<edm4hep::TrackCollection(const edm4hep::TrackCollection&)> {
 	public:
 		// Constructor
 		FilterTracksAlg(const std::string& name, ISvcLocator* pSvcLocator);
 
 		StatusCode initialize();
 
-		edm4hep::TrackCollection operator() const;
+		edm4hep::TrackCollection operator()(const edm4hep::TrackCollection& tracks) const;
 
 	private:
 		void buildBfield();

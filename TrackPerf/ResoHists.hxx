@@ -9,7 +9,6 @@
 #include <edm4hep/MCParticle.h>
 
 #include <GaudiKernel/ITHistSvc.h>
-#include <GaudiKernel/ServiceHandle.h>
 
 namespace TrackPerf {
 //! Histograms for reconstructed tracks
@@ -19,7 +18,7 @@ class ResoHists {
   ResoHists& operator=(const ResoHists&) = delete;
 
   //! Initialize empty histograms
-  ResoHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bool effi);
+  ResoHists(ITHistSvc* histSvc, std::string folder);
 
   // Fill histograms with a single track
   void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle);

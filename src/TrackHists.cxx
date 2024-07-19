@@ -2,10 +2,11 @@
 
 #include <edm4hep/TrackState.h>
 #include <math.h>
+#include <TGraph.h>
 
 using namespace TrackPerf;
 
-TrackHists::TrackHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bool effi) {
+TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	// Make Histograms
 	h_pt = new TH1F("reco_pt", 
 			";Track p_{T} [GeV];Tracks [/0.1 GeV]", 100, 0, 10);
@@ -36,18 +37,18 @@ TrackHists::TrackHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bo
 			";Outer tracker track hits; Tracks [/hit]", 20, -0.5, 19.5);
 	
 	// Register Histograms
-	histSvc->regHist("/histos/"+folder+"/track_pt", h_pt);
-	histSvc->regHist("/histos/"+folder+"/track_lambda", h_lambda);
-	histSvc->regHist("/histos/"+folder+"/track_phi", h_phi);
-	histSvc->regHist("/histos/"+folder+"/track_d0", h_d0);
-	histSvc->regHist("/histos/"+folder+"/track_z0", h_z0);
-	histSvc->regHist("/histos/"+folder+"/track_nhit", h_nhit);
-	histSvc->regHist("/histos/"+folder+"/track_lambda_nhit", h_lambda_nhit);
-	histSvc->regHist("/histos/"+folder+"/track_pt_nhit", h_pt_nhit);
-	histSvc->regHist("/histos/"+folder+"/track_pt_lambda", h_pt_lambda);
-	histSvc->regHist("/histos/"+folder+"/track_nhit1", h_nhit1);
-	histSvc->regHist("/histos/"+folder+"/track_nhit2", h_nhit2);
-	histSvc->regHist("/histos/"+folder+"/track_nhit3", h_nhit3);
+	(void)histSvc->regHist("/histos/"+folder+"/track_pt", h_pt);
+	(void)histSvc->regHist("/histos/"+folder+"/track_lambda", h_lambda);
+	(void)histSvc->regHist("/histos/"+folder+"/track_phi", h_phi);
+	(void)histSvc->regHist("/histos/"+folder+"/track_d0", h_d0);
+	(void)histSvc->regHist("/histos/"+folder+"/track_z0", h_z0);
+	(void)histSvc->regHist("/histos/"+folder+"/track_nhit", h_nhit);
+	(void)histSvc->regHist("/histos/"+folder+"/track_lambda_nhit", h_lambda_nhit);
+	(void)histSvc->regHist("/histos/"+folder+"/track_pt_nhit", h_pt_nhit);
+	(void)histSvc->regHist("/histos/"+folder+"/track_pt_lambda", h_pt_lambda);
+	(void)histSvc->regHist("/histos/"+folder+"/track_nhit1", h_nhit1);
+	(void)histSvc->regHist("/histos/"+folder+"/track_nhit2", h_nhit2);
+	(void)histSvc->regHist("/histos/"+folder+"/track_nhit3", h_nhit3);
 	
 	// Efficiency plots
 	if (effi) {
@@ -56,8 +57,8 @@ TrackHists::TrackHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bo
 		h_effeta = new TEfficiency("fake_eta_vs_eff", 
 				"Fake Track Rate vs Eta;Truth eta; Efficiency", 50, -5, 5);
 
-		histSvc->regHist("/histos/"+folder+"/track", h_);
-		histSvc->regHist("/histos/"+folder+"/track", h_);
+		//(void)histSvc->regGraph("/histos/"+folder+"/track", static_cast<TGraph*>(h_effpt));
+		//(void)histSvc->regGraph("/histos/"+folder+"/track", static_cast<TGraph*>(h_effeta));
 	}
 }
 

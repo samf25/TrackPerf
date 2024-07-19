@@ -2,7 +2,7 @@
 
 using namespace TrackPerf;
 
-ResoHists::ResoHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder) {
+ResoHists::ResoHists(ITHistSvc* histSvc, std::string folder) {
 	//Make Histograms
 	h_track_truth_pt = new TH2F("track_vs_truth_pt", 
 			";Track p_{T} [GeV];Truth p_{T} [GeV]", 100, 0, 10, 100, 0, 10);
@@ -14,10 +14,10 @@ ResoHists::ResoHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder) {
 			";truth phi - track phi;Tracks", 100, -1, 1);
 
 	//Register Histograms
-	histSvc->regHist("/histos/"+folder+"/track_truth_pt", h_track_truth_pt);
-	histSvc->regHist("/histos/"+folder+"/reso_pt_rel", h_reso_pt_rel);
-	histSvc->regHist("/histos/"+folder+"/reso_lambda", h_reso_lambda);
-	histSvc->regHist("/histos/"+folder+"/reso_phi", h_reso_phi);
+	(void)histSvc->regHist("/histos/"+folder+"/track_truth_pt", h_track_truth_pt);
+	(void)histSvc->regHist("/histos/"+folder+"/reso_pt_rel", h_reso_pt_rel);
+	(void)histSvc->regHist("/histos/"+folder+"/reso_lambda", h_reso_lambda);
+	(void)histSvc->regHist("/histos/"+folder+"/reso_phi", h_reso_phi);
 
 }
 

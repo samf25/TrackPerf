@@ -3,7 +3,7 @@
 // edm4hep
 #include <edm4hep/MCParticleCollection.h>
 #include <edm4hep/TrackCollection.h>
-#include <edm4hep/MCRecoTrackParticleCollection.h>
+#include <edm4hep/MCRecoTrackParticleAssociationCollection.h>
 
 // Gaudi
 #include <GaudiAlg/GaudiAlgorithm.h>
@@ -26,18 +26,18 @@ class TruthHists;
 class ResoHists;
 }  // namespace TrackPerf
 
-struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<(
-		const edm4hep::MCParticleCollection,
-		const edm4hep::TrackCollection,
-		const edm4hep::MCRecoTrackParticleAssociationCollection)> {
+struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
+		const edm4hep::MCParticleCollection &,
+		const edm4hep::TrackCollection &,
+		const edm4hep::MCRecoTrackParticleAssociationCollection &)> {
 	public:
 		// Constructor
 		TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator);
 
 	 	StatusCode initialize();
-		void operator()(const edm4hep::MCParticleCollection mcParticles,
-                	const edm4hep::TrackCollection tracks,
-                	const edm4hep::MCRecoTrackParticleAssociationCollection trackToMCRelations) const;
+		void operator()(const edm4hep::MCParticleCollection& mcParticles,
+                	const edm4hep::TrackCollection& tracks,
+                	const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const;
 
 	private:
 		// Determination of good vs bad match
@@ -52,6 +52,6 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<(
 		std::shared_ptr<TrackPerf::TruthHists> m_unmtTruths;
 		std::shared_ptr<TrackPerf::ResoHists> m_realReso;
 
-		TH1* m_hnumber_of_fakes;
-		TH1* m_hnumber_of_tracks;
+		TH1* m_hNumber_of_fakes;
+		TH1* m_hNumber_of_tracks;
 };

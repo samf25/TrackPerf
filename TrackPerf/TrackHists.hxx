@@ -8,7 +8,6 @@
 #include <edm4hep/Track.h>
 
 #include <GaudiKernel/ITHistSvc.h>
-#include <GaudiKernel/ServiceHandle.h>
 
 namespace TrackPerf {
 //! Histograms for reconstructed tracks
@@ -18,7 +17,7 @@ class TrackHists {
   TrackHists& operator=(const TrackHists&) = delete;
 
   //! Initialize empty histograms
-  TrackHists(ServiceHandle<ITHistSvc> histSvc, std::string& folder, bool effi);
+  TrackHists(ITHistSvc* histSvc, std::string folder, bool effi);
 
   // Fill histograms with a single track
   void fill(const edm4hep::Track* track);
@@ -27,7 +26,7 @@ class TrackHists {
 
  private:
   //! magnetic field to use for curvature -> pT conversion
-  float _Bz = 3.57;
+  float m_Bz = 3.57;
 
   //! Reconstructed track pT
   TH1* h_pt;
