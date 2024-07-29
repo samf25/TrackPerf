@@ -1,0 +1,8 @@
+
+#pragma once
+
+//! Location of CMake SOURCE directory (aka resource files before install)
+#define TRACKPERF_SOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/"
+
+//! Installation location for data files
+#define TRACKPERF_DATADIR "${CMAKE_INSTALL_FULL_DATADIR}/TrackPerf/"

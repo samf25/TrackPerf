@@ -1,4 +1,4 @@
-#include "TrackPerf/ResoHists.hxx"
+#include "ResoHists.hxx"
 
 using namespace TrackPerf;
 

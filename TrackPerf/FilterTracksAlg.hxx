@@ -1,5 +1,4 @@
 #pragma once
-
 // edm4hep
 #include <edm4hep/TrackCollection.h>
 

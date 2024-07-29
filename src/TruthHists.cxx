@@ -1,4 +1,4 @@
-#include "TrackPerf/TruthHists.hxx"
+#include "TruthHists.hxx"
 
 using namespace TrackPerf;
 

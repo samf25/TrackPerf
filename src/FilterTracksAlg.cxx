@@ -1,4 +1,4 @@
-#include "TrackPerf/FilterTracksAlg.hxx"
+#include "FilterTracksAlg.hxx"
 
 #include <DD4hep/Detector.h>
 

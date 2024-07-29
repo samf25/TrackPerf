@@ -1,12 +1,12 @@
-#include "TrackPerf/TrackPerfHistAlg.hxx"
+#include "TrackPerfHistAlg.hxx"
 
 #include <GaudiKernel/ITHistSvc.h>
 #include <TH1.h>
 #include <TFile.h>
 
-#include "TrackPerf/ResoHists.hxx"
-#include "TrackPerf/TrackHists.hxx"
-#include "TrackPerf/TruthHists.hxx"
+#include "ResoHists.hxx"
+#include "TrackHists.hxx"
+#include "TruthHists.hxx"
 
 DECLARE_COMPONENT(TrackPerfHistAlg)
 

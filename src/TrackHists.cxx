@@ -1,4 +1,4 @@
-#include "TrackPerf/TrackHists.hxx"
+#include "TrackHists.hxx"
 
 #include <edm4hep/TrackState.h>
 #include <math.h>
