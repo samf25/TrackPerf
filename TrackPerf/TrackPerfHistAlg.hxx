@@ -27,7 +27,7 @@ class ResoHists;
 }  // namespace TrackPerf
 
 struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
-		const edm4hep::MCParticleCollection &,
+		const DataWrapper<edm4hep::MCParticleCollection> &,
 		const edm4hep::TrackCollection &,
 		const edm4hep::MCRecoTrackParticleAssociationCollection &)> {
 	public:
@@ -35,7 +35,7 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
 		TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator);
 
 	 	StatusCode initialize();
-		void operator()(const edm4hep::MCParticleCollection& mcParticles,
+		void operator()(const DataWrapper<edm4hep::MCParticleCollection>& mcParticles,
                 	const edm4hep::TrackCollection& tracks,
                 	const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const;
 

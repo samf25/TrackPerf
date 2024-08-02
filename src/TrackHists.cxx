@@ -92,8 +92,8 @@ void TrackHists::fill(const edm4hep::Track* track) {
 	h_pt_lambda->Fill(pt, lambda);
 
 	// Subdetector nhits
-	std::vector<int> subdetectorHitNumbers(7);
-	for (std::size_t i = 0; i < 7; ++i) {
+	std::vector<int> subdetectorHitNumbers(6);
+	for (std::size_t i = 0; i < track->subdetectorHitNumbers_size(); ++i) {
 		subdetectorHitNumbers[i] = track->getSubdetectorHitNumbers(i);
 	}
 	if (subdetectorHitNumbers[1] + subdetectorHitNumbers[2] > 0) {

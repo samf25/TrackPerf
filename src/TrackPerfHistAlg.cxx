@@ -12,8 +12,8 @@ DECLARE_COMPONENT(TrackPerfHistAlg)
 
 // Implement Constructor
 TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : Consumer(name, pSvcLocator, {
-		KeyValue("InputTrackCollectionName", "Tracks"),
 		KeyValue("InputMCParticleCollectionName", "MCParticle"),
+		KeyValue("InputTrackCollectionName", "Tracks"),
 	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations")}) {}
 
 // Implement Initializer
@@ -45,12 +45,12 @@ StatusCode TrackPerfHistAlg::initialize() {
 
 // Implement operator (To be run on each event -- the workhorse)
 void TrackPerfHistAlg::operator()(
-			const edm4hep::MCParticleCollection& mcParticles,
+			const DataWrapper<edm4hep::MCParticleCollection>& mcParticles,
                         const edm4hep::TrackCollection& tracks,
                         const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const{
 	// MC Particles
 	std::set<const edm4hep::MCParticle*> mcpSet;
-	for (const auto& mcp : mcParticles) {
+	for (const auto& mcp : *mcParticles.getData()) {
 		if (mcp.getGeneratorStatus() != 1) continue;
 		if (mcp.getCharge() == 0) continue;
 		if (mcp.isDecayedInTracker()) continue;
