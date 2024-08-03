@@ -24,9 +24,9 @@ TruthHists::TruthHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	// Efficiency Plots
 	if (effi) {
 		h_effpt_total = new TH1F("eff_fake_pt_total",
-                                "pT of All Truths for Eff plot;Truth pT [GeV];Count", 50, 0, 100);
+                                "pT of All Truths for Eff plot;Truth pT [GeV];Count", 50, 0, 12);
                 h_effpt_passed = new TH1F("eff_fake_pt_passed",
-                                "pT of Matched Truth for Eff plot;Truth pT [GeV];Count", 50, 0, 100);
+                                "pT of Matched Truth for Eff plot;Truth pT [GeV];Count", 50, 0, 12);
                 h_effeta_total = new TH1F("eff_fake_eta_total",
                                 "eta of All Truth for Eff plot;Truth eta;Count", 50, -3, 3);
                 h_effeta_passed = new TH1F("eff_fake_eta_passed",
