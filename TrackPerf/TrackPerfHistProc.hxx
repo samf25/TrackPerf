@@ -62,4 +62,5 @@ class TrackPerfHistProc : public marlin::Processor {
 
   TH1* h_number_of_fakes;
   TH1* h_number_of_tracks;
+  TH1* h_count;
 };

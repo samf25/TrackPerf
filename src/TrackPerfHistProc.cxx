@@ -68,6 +68,7 @@ void TrackPerfHistProc::init() {
   _fakeTracks = std::make_shared<TrackPerf::TrackHists>(true);
   h_number_of_fakes = new TH1F("number_of_fakes",
                                ";Number of fake tracks;Events", 100, 0, 300000);
+  h_count = new TH1F("Count","C;C",20,0,10);
   tree->mkdir("../unmt");
   tree->cd("../unmt");
   _unmtTruths = std::make_shared<TrackPerf::TruthHists>(false);
@@ -81,7 +82,6 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // to keep track of unsaved objects.
 
   // MCParticles
-
   LCCollection* mcpCol = evt->getCollection(_mcpColName);
 
   if (mcpCol->getTypeName() != lcio::LCIO::MCPARTICLE) {
@@ -94,7 +94,8 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
         static_cast<const EVENT::MCParticle*>(mcpCol->getElementAt(i));
 
     if (mcp->getGeneratorStatus() != 1) {
-      continue;
+      h_count->Fill(1);
+	    continue;
     }
 
     if (mcp->getCharge() == 0) {
@@ -102,6 +103,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
     }
 
     if (mcp->isDecayedInTracker()) {
+	    h_count->Fill(2);
       continue;
     }
 
@@ -110,6 +112,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
     double pt = std::sqrt(std::pow(mom[0], 2) + std::pow(mom[1], 2));
     double lambda = std::atan2(mom[2], pt);
     if (fabs(lambda) > 75. / 180 * 3.14) {
+	    h_count->Fill(3);
       continue;
     }
 

@@ -31,6 +31,9 @@ class TruthHists {
   TH1* h_vtr;
   TH1* h_vtz;
   TH1* h_deltaR;
+  TH1* h_deltaRlow;
+  TH1* h_deltaRmid;
+  TH1* h_deltaRhigh;
   TEfficiency* h_effpt;
   TEfficiency* h_effeta;
 };

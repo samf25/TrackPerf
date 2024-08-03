@@ -32,9 +32,9 @@ TrackHists::TrackHists(bool effi) {
                20, -0.5, 19.5);
   if (effi) {
     h_effpt = new TEfficiency("fake_pt_vs_eff", 
-      "Fake Track Rate vs pT;Truth pT [GeV]; Efficiency", 50, 0, 12);
+      "Fake Track Rate vs pT;Reconstructed pT [GeV]; Efficiency", 50, 0, 12);
     h_effeta = new TEfficiency("fake_eta_vs_eff", 
-      "Fake Track Rate vs Eta;Truth eta; Efficiency", 50, -5, 5);
+      "Fake Track Rate vs Eta;Reconstructed eta; Efficiency", 50, -4, 4);
   }
 }
 
