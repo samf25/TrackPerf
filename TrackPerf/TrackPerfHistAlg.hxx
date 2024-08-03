@@ -57,8 +57,4 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
 		TH1* m_hNumber_of_fakes;
 		TH1* m_hNumber_of_tracks;
 		TH1* m_hcount;
-		
-		// method to check if Tracks are equal since edm4hep is bad
-		bool trackEqual(const edm4hep::Track* trk1, const edm4hep::Track* trk2) const;
-		bool mcEqual(const edm4hep::MCParticle* mc1, const edm4hep::MCParticle* mc2) const;
 };

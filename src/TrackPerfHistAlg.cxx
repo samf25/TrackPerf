@@ -54,20 +54,18 @@ void TrackPerfHistAlg::operator()(
 	MsgStream log(msgSvc(), name());
 	// MC Particles
 	std::vector<edm4hep::MCParticle> mcpSet;
-	//log<<MSG::WARNING<<"----------"<<endmsg;
-	for (size_t i = 0; i < mcParticles.getData()->size(); ++i) {
-		const auto& mcp = (*mcParticles.getData())[i];
-		//log<<MSG::WARNING<<mcp<<endmsg;
-		if (mcp.getGeneratorStatus() != 1) {m_hcount->Fill(1);continue;}
-		if (mcp.getCharge() == 0) {continue;}
-		if (mcp.isDecayedInTracker()) {m_hcount->Fill(2);continue;}
+	for (const auto& mcp : *mcParticles.getData()) {
+		if (mcp.getGeneratorStatus() != 1) { continue; }
+		if (mcp.getCharge() == 0) { continue; }
+		if (mcp.isDecayedInTracker()) { continue; }
 	
 		// Tracker Acceptance
 		const edm4hep::Vector3f& mom = mcp.getMomentum();
 		double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 		double lambda = std::atan2(mom.z, pt);
-		if (fabs(lambda) > 75. / 180 * M_PI) {m_hcount->Fill(3);continue;}
-		//log<<MSG::WARNING<<"added"<<endmsg;
+		
+		if (fabs(lambda) > 75. / 180 * M_PI) { continue; }
+
 		mcpSet.push_back(mcp);
 		m_allTruths->fill(&mcp);
 	}
@@ -79,27 +77,28 @@ void TrackPerfHistAlg::operator()(
 		m_allTracks->fill(&trk);
 	}
 	m_hNumber_of_tracks->Fill(trkSet.size());
-	//log<<MSG::WARNING<<"@@@@@@@@@@@@@@"<<endmsg;
+
 	// Loop over MC Relations and save matched objects
 	for (const auto& rel : trackToMCRelations) {
 		const edm4hep::MCParticle mcpObj = rel.getSim();
 		const edm4hep::MCParticle* mcp = &mcpObj;
 		const edm4hep::Track trkObj = rel.getRec();
 		const edm4hep::Track* trk = &trkObj;
-		// Look for mcpObj and move all other objects to front of list
-		auto itMC = std::find_if(mcpSet.begin(), mcpSet.end(), [this, mcp](edm4hep::MCParticle obj) { 
-			return this->mcEqual(&obj, mcp); 
+		// Look for mcpObj in mcpSet
+		auto itMC = std::find_if(mcpSet.begin(), mcpSet.end(), [this, mcpObj](edm4hep::MCParticle obj) { 
+			return obj == mcpObj;
 		});
 		
-		if (itMC == mcpSet.end()) {
-			//log<<MSG::WARNING<<"Rel:\n"<<mcpObj<<endmsg;
-			//for(const auto mc : mcpSet) {log<<"LIST:\n"<<MSG::WARNING<<mc<<endmsg;}
-			//log<<MSG::WARNING<<endmsg;
-			continue;} // Truth particle not accepted
+		if (itMC == mcpSet.end()) { // Truth particle not accepted
+			log << MSG::DEBUG << "Actual MCParticle:\n" << mcpObj << endmsg;
+			for(const auto mc : mcpSet) { log << MSG::DEBUG << "MCPSET: " << mc << endmsg;}
+			log << MSG::DEBUG << endmsg;
+			continue;
+		}
 		if (rel.getWeight() > m_matchProb) {
 			// Look for trkObj and move all other objects to front of lis
-			auto itTRK = std::find_if(trkSet.begin(), trkSet.end(), [this, trk](const edm4hep::Track obj) {
-				return this->trackEqual(&obj, trk);
+			auto itTRK = std::find_if(trkSet.begin(), trkSet.end(), [this, trkObj](const edm4hep::Track obj) {
+				return obj == trkObj;
 			});
 			if (itTRK != trkSet.end()) {
 				m_realTracks->fill(trk);
@@ -126,41 +125,3 @@ void TrackPerfHistAlg::operator()(
 	m_hNumber_of_fakes->Fill(trkSet.size());
 }
 
-bool TrackPerfHistAlg::trackEqual(const edm4hep::Track* trk1, const edm4hep::Track* trk2) const{
-	// The only reason this has to be done is that edm4hep TrackerHit::operator== doesn't work...
-	if (trk1->getType() != trk2->getType() ||
-		trk1->getType() != trk2->getType() ||
-		trk1->getChi2() != trk2->getChi2() ||
-		trk1->getNdf() != trk2->getNdf() ||
-		trk1->getDEdx() != trk2->getDEdx() ||
-		trk1->getDEdxError() != trk2->getDEdxError() ||
-		trk1->getRadiusOfInnermostHit() != trk2->getRadiusOfInnermostHit() ||
-		trk1->getObjectID() != trk2->getObjectID() ||
-		trk1->trackerHits_size() != trk2->trackerHits_size() ||
-		trk1->trackStates_size() != trk2->trackStates_size()) {
-			return false;
-		}
-	
-	for (int i = 0; i < trk1->trackerHits_size(); ++i) {
-		if (trk1->getTrackerHits(i) != trk2->getTrackerHits(i)) {
-			return false;
-		}
-	}
-	
-	return true;
-}
-
-bool TrackPerfHistAlg::mcEqual(const edm4hep::MCParticle* mc1, const edm4hep::MCParticle* mc2) const{
-		if (mc1->getPDG() != mc2->getPDG() ||
-                mc1->getGeneratorStatus() != mc2->getGeneratorStatus() ||
-                mc1->getCharge() != mc2->getCharge() ||
-                mc1->getTime() != mc2->getTime() ||
-                mc1->getMass() != mc2->getMass() ||
-                mc1->getObjectID() != mc2->getObjectID() ||
-                mc1->getMomentum() != mc2->getMomentum() ||
-                mc1->getVertex() != mc2->getVertex()) {
-			return false;
-		}		
-
-	return true;
-}
