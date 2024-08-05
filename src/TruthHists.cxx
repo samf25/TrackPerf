@@ -64,14 +64,17 @@ void TruthHists::fill(const edm4hep::MCParticle* particle) {
 
 // Fill Efficiency Plots with data
 void TruthHists::effi(const edm4hep::MCParticle* particle, bool passed) {
+	// Get particle pt and eta
 	const edm4hep::Vector3f& mom = particle->getMomentum();
 	double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 	double eta = std::atanh(mom.z / std::sqrt(std::pow(pt, 2) + std::pow(mom.z, 2)));
 	
+	// Fill pt if within eta range
 	if (fabs(eta) < 2) {
 		h_effpt_total->Fill(pt);
 		if (passed) { h_effpt_passed->Fill(pt); }
 	}
+	// Fill eta if within pt range
 	if (pt > 0.5) {
 		h_effeta_total->Fill(eta);
 		if (passed) { h_effeta_passed->Fill(eta); }

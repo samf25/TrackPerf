@@ -1,10 +1,14 @@
 #include "TrackPerfHistAlg.hxx"
 
+// Gaudi
 #include <GaudiKernel/ITHistSvc.h>
 #include <GaudiKernel/MsgStream.h>
+
+// Root
 #include <TH1.h>
 #include <TFile.h>
 
+// TrackPerf
 #include "ResoHists.hxx"
 #include "TrackHists.hxx"
 #include "TruthHists.hxx"
@@ -43,6 +47,7 @@ StatusCode TrackPerfHistAlg::initialize() {
 	
 	m_hcount = new TH1F("Count", "c;c", 20, 0, 10);
 	(void)histSvc->regHist("/histos/unmt/count", m_hcount);
+	
 	return StatusCode::SUCCESS;
 }
 

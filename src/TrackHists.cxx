@@ -110,15 +110,18 @@ void TrackHists::fill(const edm4hep::Track* track) {
 
 // Fill efficiency plots
 void TrackHists::effi(const edm4hep::Track* track, bool passed) {
+	// Get track pt and eta
 	const edm4hep::TrackState& state = track->getTrackStates(edm4hep::TrackState::AtIP);
 
 	double pt = fabs(0.3 * m_Bz / state.omega /1000);
 	double eta = -std::log(std::tan((1.57079632679 - std::atan(state.tanLambda))/2));
 	
+	// Fill pt if within eta range
 	if (fabs(eta) < 2) {
 		h_effpt_total->Fill(pt);
 		if (passed) { h_effpt_passed->Fill(pt); }
 	}
+	// Fill eta if within pt range
 	if (pt > 0.5) {
 		h_effeta_total->Fill(eta);
 		if (passed) { h_effeta_passed->Fill(eta); }
