@@ -1,33 +1,55 @@
 #pragma once
 
+// Root
 #include <TH1.h>
 #include <TH2.h>
+
+// Standard
 #include <string>
 
+// edm4hep
 #include <edm4hep/Track.h>
 
+// Gaudi
 #include <GaudiKernel/ITHistSvc.h>
 
 namespace TrackPerf {
-//! Histograms for reconstructed tracks
+/**
+ * @brief Histograms for reconstructed tracks
+ */
 class TrackHists {
  public:
   TrackHists(const TrackHists&) = delete;
   TrackHists& operator=(const TrackHists&) = delete;
 
-  //! Initialize empty histograms
+  /**
+   * @brief Constructor for TrackHists. Initialize empty histograms
+   * @param histSvc The Gaudi histogram service to register the histograms
+   * @param folder The folder in which to register the histograms
+   * @param effi Whether or not this instance needs efficiency plots
+   */
   TrackHists(ITHistSvc* histSvc, std::string folder, bool effi);
 
-  // Fill histograms with a single track
+  /**
+   * @brief Fill histograms with a single track
+   * @param track The track to fill histograms
+   */ 
   void fill(const edm4hep::Track* track);
 
+  /**
+   * @brief Fill efficiency plots with sinlge track
+   * @TODO: Currently there is no way to register TEfficiency plots. So this makes a total and a passed histogram that can be combined in an external script into a TEfficiency plot.
+   * @param track The track to fill the plots
+   * @param passed Whether it is a passed or total element 
+   */ 
   void effi(const edm4hep::Track* track, bool passed);
 
  private:
   //! magnetic field to use for curvature -> pT conversion
   float m_Bz = 3.57;
 
-  //! Reconstructed track pT
+  //! Histograms to register information
+  ///@{
   TH1* h_pt;
   TH1* h_lambda;
   TH1* h_phi;
@@ -43,8 +65,13 @@ class TrackHists {
   TH1* h_nhit4;
   TH1* h_nhit5;
   TH1* h_nhit6;
+  ///@}
+  //! Histograms to hold TEfficiency data
+  ///@{
   TH1* h_effpt_total;
   TH1* h_effpt_passed;
   TH1* h_effeta_total;
-  TH1* h_effeta_passed;};
+  TH1* h_effeta_passed;
+  ///@}
+};
 }  // namespace TrackPerf
