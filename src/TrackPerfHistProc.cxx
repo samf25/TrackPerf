@@ -13,6 +13,7 @@
 #include "TrackPerf/ResoHists.hxx"
 #include "TrackPerf/TrackHists.hxx"
 #include "TrackPerf/TruthHists.hxx"
+#include "TrackPerf/EfficiencyHists.hxx"
 
 TrackPerfHistProc aTrackPerfHistProc;
 
@@ -54,24 +55,27 @@ void TrackPerfHistProc::init() {
   // Create ROOT histograms, with location setup by the above factory
   tree->mkdir("all");
   tree->cd("all");
-  _allTracks = std::make_shared<TrackPerf::TrackHists>(false);
-  _allTruths = std::make_shared<TrackPerf::TruthHists>(false);
+  _allTracks = std::make_shared<TrackPerf::TrackHists>();
+  _allTruths = std::make_shared<TrackPerf::TruthHists>();
   h_number_of_tracks = new TH1F(
       "number_of_tracks", ";Number of seeds/tracks;Events", 100, 0, 300000);
   tree->mkdir("../real");
   tree->cd("../real");
-  _realTracks = std::make_shared<TrackPerf::TrackHists>(false);
-  _realTruths = std::make_shared<TrackPerf::TruthHists>(true);
+  _realTracks = std::make_shared<TrackPerf::TrackHists>();
+  _realTruths = std::make_shared<TrackPerf::TruthHists>();
   _realReso = std::make_shared<TrackPerf::ResoHists>();
   tree->mkdir("../fake");
   tree->cd("../fake");
-  _fakeTracks = std::make_shared<TrackPerf::TrackHists>(true);
+  _fakeTracks = std::make_shared<TrackPerf::TrackHists>();
   h_number_of_fakes = new TH1F("number_of_fakes",
                                ";Number of fake tracks;Events", 100, 0, 300000);
-  h_count = new TH1F("Count","C;C",20,0,10);
   tree->mkdir("../unmt");
   tree->cd("../unmt");
-  _unmtTruths = std::make_shared<TrackPerf::TruthHists>(false);
+  _unmtTruths = std::make_shared<TrackPerf::TruthHists>();
+  tree->mkdir("../efficiency");
+  tree->cd("../efficiency");
+  _effiPlots = std::make_shared<TrackPerf::EfficiencyHists>(true);
+  _fakePlots = std::make_shared<TrackPerf::EfficiencyHists>(false);
 }
 
 void TrackPerfHistProc::processRunHeader(LCRunHeader* /*run*/) {}
@@ -94,7 +98,6 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
         static_cast<const EVENT::MCParticle*>(mcpCol->getElementAt(i));
 
     if (mcp->getGeneratorStatus() != 1) {
-      h_count->Fill(1);
 	    continue;
     }
 
@@ -103,7 +106,6 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
     }
 
     if (mcp->isDecayedInTracker()) {
-	    h_count->Fill(2);
       continue;
     }
 
@@ -112,7 +114,6 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
     double pt = std::sqrt(std::pow(mom[0], 2) + std::pow(mom[1], 2));
     double lambda = std::atan2(mom[2], pt);
     if (fabs(lambda) > 75. / 180 * 3.14) {
-	    h_count->Fill(3);
       continue;
     }
 
@@ -161,10 +162,9 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
       if (trkSet.find(trk) != trkSet.end()) {
         _realTracks->fill(trk);
         _realTruths->fill(mcp);
-	_realTruths->effi(mcp, true);
-	_realTruths->deltaR(mcp, trk);
+	_effiPlots->fillMC(mcp, true);
         _realReso->fill(trk, mcp);
-	_fakeTracks->effi(trk, false);
+	_fakePlots->fillTrack(trk, false);
 
         mcpSet.erase(mcp);
         trkSet.erase(trk);
@@ -176,11 +176,11 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // Save unmatched objects
   for (const EVENT::MCParticle* mcp : mcpSet) {
     _unmtTruths->fill(mcp);
-    _realTruths->effi(mcp, false);
+    _effiPlots->fillMC(mcp, false);
   }
   for (const EVENT::Track* trk : trkSet) {
     _fakeTracks->fill(trk);
-    _fakeTracks->effi(trk, true);
+    _fakePlots->fillTrack(trk, true);
   }
   h_number_of_fakes->Fill(trkSet.size());
 }

@@ -50,6 +50,7 @@ ENDIF()
 
 # Main library with Processors
 ADD_LIBRARY(TrackPerf SHARED
+  ./src/EfficiencyHists.cxx
   ./src/TrackPerfHistProc.cxx
   ./src/TrackHists.cxx
   ./src/TruthHists.cxx

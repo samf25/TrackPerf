@@ -4,7 +4,7 @@
 
 using namespace TrackPerf;
 
-TrackHists::TrackHists(bool effi) {
+TrackHists::TrackHists() {
   h_pt =
       new TH1F("reco_pt", ";Track p_{T} [GeV];Tracks [/0.1 GeV]", 100, 0, 10);
   h_lambda =
@@ -30,12 +30,6 @@ TrackHists::TrackHists(bool effi) {
   h_nhit3 =
       new TH1F("reco_nhit_outer", ";Outer tracker track hits; Tracks [/hit]",
                20, -0.5, 19.5);
-  if (effi) {
-    h_effpt = new TEfficiency("fake_pt_vs_eff", 
-      "Fake Track Rate vs pT;Reconstructed pT [GeV]; Efficiency", 50, 0, 12);
-    h_effeta = new TEfficiency("fake_eta_vs_eff", 
-      "Fake Track Rate vs Eta;Reconstructed eta; Efficiency", 50, -4, 4);
-  }
 }
 
 void TrackHists::fill(const EVENT::Track* track) {
@@ -61,12 +55,4 @@ void TrackHists::fill(const EVENT::Track* track) {
     h_nhit2->Fill(subdetectorHitNumbers[3] + subdetectorHitNumbers[4]);
     h_nhit3->Fill(subdetectorHitNumbers[5] + subdetectorHitNumbers[6]);
   }
-}
-
-void TrackHists::effi(const EVENT::Track* track, bool passed) {
-	float pt = fabs(0.3 * _Bz / track->getOmega() / 1000);
-	float eta = -std::log(std::tan((1.57079632679 - std::atan(track->getTanLambda()))/2));
-
-	if (fabs(eta) < 2) h_effpt->Fill(passed, pt);
-	if (pt > 0.5) h_effeta->Fill(passed, eta);
 }
