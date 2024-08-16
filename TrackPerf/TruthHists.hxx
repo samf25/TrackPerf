@@ -17,7 +17,7 @@ class TruthHists {
   TruthHists();
 
   // Fill histograms with a single track
-  void fill(const EVENT::MCParticle* track);
+  void fill(const EVENT::MCParticle* particle);
 
  private:
   //! Reconstructed track pT

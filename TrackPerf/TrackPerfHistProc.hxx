@@ -8,6 +8,7 @@ namespace TrackPerf {
 class TrackHists;
 class TruthHists;
 class ResoHists;
+class EfficiencyHists;
 }  // namespace TrackPerf
 
 //! Creates a simple column wise ntuple in a HistProc from LCIO collections.
@@ -59,6 +60,8 @@ class TrackPerfHistProc : public marlin::Processor {
   std::shared_ptr<TrackPerf::TruthHists> _realTruths;
   std::shared_ptr<TrackPerf::TruthHists> _unmtTruths;
   std::shared_ptr<TrackPerf::ResoHists> _realReso;
+  std::shared_ptr<TrackPerf::EfficiencyHists> _effiPlots;
+  std::shared_ptr<TrackPerf::EfficiencyHists> _fakePlots;
 
   TH1* h_number_of_fakes;
   TH1* h_number_of_tracks;

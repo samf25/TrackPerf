@@ -13,6 +13,7 @@
 #include "TrackPerf/ResoHists.hxx"
 #include "TrackPerf/TrackHists.hxx"
 #include "TrackPerf/TruthHists.hxx"
+#include "TrackPerf/EfficiencyHists.hxx"
 
 TrackPerfHistProc aTrackPerfHistProc;
 
@@ -71,6 +72,10 @@ void TrackPerfHistProc::init() {
   tree->mkdir("../unmt");
   tree->cd("../unmt");
   _unmtTruths = std::make_shared<TrackPerf::TruthHists>();
+  tree->mkdir("../efficiency");
+  tree->cd("../efficiency");
+  _effiPlots = std::make_shared<TrackPerf::EfficiencyHists>(true);
+  _fakePlots = std::make_shared<TrackPerf::EfficiencyHists>(false);
 }
 
 void TrackPerfHistProc::processRunHeader(LCRunHeader* /*run*/) {}
@@ -81,7 +86,6 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // to keep track of unsaved objects.
 
   // MCParticles
-
   LCCollection* mcpCol = evt->getCollection(_mcpColName);
 
   if (mcpCol->getTypeName() != lcio::LCIO::MCPARTICLE) {
@@ -94,7 +98,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
         static_cast<const EVENT::MCParticle*>(mcpCol->getElementAt(i));
 
     if (mcp->getGeneratorStatus() != 1) {
-      continue;
+	    continue;
     }
 
     if (mcp->getCharge() == 0) {
@@ -158,7 +162,9 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
       if (trkSet.find(trk) != trkSet.end()) {
         _realTracks->fill(trk);
         _realTruths->fill(mcp);
+	_effiPlots->fillMC(mcp, true);
         _realReso->fill(trk, mcp);
+	_fakePlots->fillTrack(trk, false);
 
         mcpSet.erase(mcp);
         trkSet.erase(trk);
@@ -170,9 +176,11 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // Save unmatched objects
   for (const EVENT::MCParticle* mcp : mcpSet) {
     _unmtTruths->fill(mcp);
+    _effiPlots->fillMC(mcp, false);
   }
   for (const EVENT::Track* trk : trkSet) {
     _fakeTracks->fill(trk);
+    _fakePlots->fillTrack(trk, true);
   }
   h_number_of_fakes->Fill(trkSet.size());
 }

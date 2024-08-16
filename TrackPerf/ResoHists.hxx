@@ -31,5 +31,10 @@ class ResoHists {
   TH1* h_reso_pt_rel;
   TH1* h_reso_lambda;
   TH1* h_reso_phi;
+
+  TH1F* h_deltaR;
+  TH1F* h_deltaRlow;
+  TH1F* h_deltaRmid;
+  TH1F* h_deltaRhigh;
 };
 }  // namespace TrackPerf
