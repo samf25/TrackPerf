@@ -77,7 +77,7 @@ void TrackPerfHistAlg::operator()(
 
 	// Tracks
 	std::vector<edm4hep::Track> trkSet;
-	log << MSG::WARNING << "Track Collection Size: " << tracks.size() << endmsg;
+	log << MSG::DEBUG << "Track Collection Size: " << tracks.size() << endmsg;
 	for (const auto& trk : tracks) {
 		trkSet.push_back(trk);
 		m_allTracks->fill(&trk);
