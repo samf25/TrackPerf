@@ -43,10 +43,7 @@ StatusCode TrackPerfHistAlg::initialize() {
 	m_hNumber_of_fakes = new TH1F("Number_of_fakes", "Number of fake tracks;Events", 100, 0, 300000);
 	(void)histSvc->regHist("/histos/fake/Number_of_fakes", m_hNumber_of_fakes);
 
-	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "unmt", false);
-	
-	m_hcount = new TH1F("Count", "c;c", 20, 0, 10);
-	(void)histSvc->regHist("/histos/unmt/count", m_hcount);
+	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "unmt", false);	
 	
 	return StatusCode::SUCCESS;
 }
@@ -102,7 +99,7 @@ void TrackPerfHistAlg::operator()(
 			continue;
 		}
 		if (rel.getWeight() > m_matchProb) {
-			// Look for trkObj and move all other objects to front of lis
+			// Look for trkObj and move all other objects to front of list
 			auto itTRK = std::find_if(trkSet.begin(), trkSet.end(), [this, trkObj](const edm4hep::Track obj) {
 				return obj == trkObj;
 			});
@@ -115,8 +112,8 @@ void TrackPerfHistAlg::operator()(
 
 				mcpSet.erase(itMC);
 				trkSet.erase(itTRK);
-			} 
-		} 
+			}	
+		}
 	}
 
 	// Save unmatched objects

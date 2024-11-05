@@ -9,7 +9,7 @@ using namespace TrackPerf;
 TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	// Make Histograms
 	h_pt = new TH1F("reco_pt", 
-			";Track p_{T} [GeV];Tracks [/0.1 GeV]", 100, 0, 10);
+			";Track p_{T} [GeV];Tracks [/0.1 GeV]", 200, 0, 1000);
 	h_lambda = new TH1F("reco_lambda", 
 			";Track #lambda; Tracks", 100, -3.14, 3.14);
 	h_phi = new TH1F("reco_phi", 
@@ -25,16 +25,23 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 			100, -3.14, 3.14, 20, -0.5, 19.5);
 	h_pt_nhit = new TH2F("pt_vs_nhit", 
 			";Track p_{T} [GeV]; Track Hits", 
-			100, 0, 10, 20, -0.5, 19.5);
+			200, 0, 1000, 20, -0.5, 19.5);
 	h_pt_lambda = new TH2F("pt_vs_lambda", 
 			";Track p_{T} [GeV]; Track #lambda", 
-			100, 0, 10, 100, -3.14, 3.14);
+			200, 0, 1000, 100, -3.14, 3.14);
 	h_nhit1 = new TH1F("reco_nhit_vtx", 
 			";Vertex detector track hits; Tracks [/hit]", 20, -0.5, 19.5);
 	h_nhit2 = new TH1F("reco_nhit_inner",
 			";Inner tracker track hits; Tracks [/hit]", 20, -0.5, 19.5);
 	h_nhit3 = new TH1F("reco_nhit_outer", 
 			";Outer tracker track hits; Tracks [/hit]", 20, -0.5, 19.5);
+	h_z0_nhit = new TH2F("z0_vs_nhit",
+			";Track z0; Track Hits",
+			100, -10, 10, 20, -0.5, 19.5);
+	h_z0_pt = new TH2F("z0_vs_pt",
+			";Track z0; Track p_{T} [GeV]",
+			100, -10, 10, 200, 0, 1000);
+
 	
 	// Register Histograms
 	(void)histSvc->regHist("/histos/"+folder+"/track_pt", h_pt);
@@ -49,13 +56,14 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	(void)histSvc->regHist("/histos/"+folder+"/track_nhit1", h_nhit1);
 	(void)histSvc->regHist("/histos/"+folder+"/track_nhit2", h_nhit2);
 	(void)histSvc->regHist("/histos/"+folder+"/track_nhit3", h_nhit3);
-	
+	(void)histSvc->regHist("/histos/"+folder+"/track_z0_nhit", h_z0_nhit);
+	(void)histSvc->regHist("/histos/"+folder+"/track_z0_pt", h_z0_pt);
 	// Efficiency plots
 	if (effi) {
 		h_effpt_total = new TH1F("eff_fake_pt_total", 
-				"pT of All Tracks for Eff plot;Track pT [GeV];Count", 50, 0, 12);
+				"pT of All Tracks for Eff plot;Track pT [GeV];Count", 500, 0, 1200);
 		h_effpt_passed = new TH1F("eff_fake_pt_passed",
-				"pT of Fake Tracks for Eff plot;Track pT [GeV];Count", 50, 0, 12);
+				"pT of Fake Tracks for Eff plot;Track pT [GeV];Count", 500, 0, 1200);
 		h_effeta_total = new TH1F("eff_fake_eta_total", 
 				"eta of All Tracks for Eff plot;Track eta;Count", 50, -3, 3);
 		h_effeta_passed = new TH1F("eff_fake_eta_passed",
@@ -90,6 +98,8 @@ void TrackHists::fill(const edm4hep::Track* track) {
 	h_lambda_nhit->Fill(lambda, track->trackerHits_size());
 	h_pt_nhit->Fill(pt, track->trackerHits_size());
 	h_pt_lambda->Fill(pt, lambda);
+	h_z0_nhits->Fill(state.z0, track->trackerHits_size());
+	h_z0_pt->Fill(state.z0, pt);
 
 	// Subdetector nhits
 	std::vector<int> subdetectorHitNumbers(6);

@@ -5,7 +5,7 @@ using namespace TrackPerf;
 TruthHists::TruthHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	// Make Histograms
 	h_pt = new TH1F("truth_pt", 
-			";Particle p_{T} [GeV];Particles [/0.1 GeV]", 100, 0, 10);
+			";Particle p_{T} [GeV];Particles [/0.1 GeV]", 200, 0, 1000);
 	h_lambda = new TH1F("truth_lambda",
 			";Particle #lambda; Particles", 100, -3.14, 3.14);
 	h_phi = new TH1F("truth_phi",
@@ -24,9 +24,9 @@ TruthHists::TruthHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	// Efficiency Plots
 	if (effi) {
 		h_effpt_total = new TH1F("eff_fake_pt_total",
-                                "pT of All Truths for Eff plot;Truth pT [GeV];Count", 50, 0, 12);
+                                "pT of All Truths for Eff plot;Truth pT [GeV];Count", 500, 0, 1200);
                 h_effpt_passed = new TH1F("eff_fake_pt_passed",
-                                "pT of Matched Truth for Eff plot;Truth pT [GeV];Count", 50, 0, 12);
+                                "pT of Matched Truth for Eff plot;Truth pT [GeV];Count", 500, 0, 1200);
                 h_effeta_total = new TH1F("eff_fake_eta_total",
                                 "eta of All Truth for Eff plot;Truth eta;Count", 50, -3, 3);
                 h_effeta_passed = new TH1F("eff_fake_eta_passed",

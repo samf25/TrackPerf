@@ -85,6 +85,5 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
 		///@{
 		TH1* m_hNumber_of_fakes;
 		TH1* m_hNumber_of_tracks;
-		TH1* m_hcount;
 		///@}
 };
