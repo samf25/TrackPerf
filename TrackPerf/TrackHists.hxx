@@ -65,6 +65,8 @@ class TrackHists {
   TH1* h_nhit4;
   TH1* h_nhit5;
   TH1* h_nhit6;
+  TH2* h_z0_nhit;
+  TH2* h_z0_pt;
   ///@}
   //! Histograms to hold TEfficiency data
   ///@{
