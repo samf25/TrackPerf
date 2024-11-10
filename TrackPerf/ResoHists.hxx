@@ -36,12 +36,9 @@ class ResoHists {
    * @param track The track to fill histograms
    * @param particle The MC particle connected to the Track
    */
-  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle);
+  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache);
 
  private:
-  //! magnetic field to use for curvature -> pT conversion
-  float m_Bz = 3.57;
-
   //! Histograms to register information
   ///@{
   TH2* h_track_truth_pt;

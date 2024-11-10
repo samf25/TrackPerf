@@ -4,6 +4,14 @@
 #include <GaudiKernel/ITHistSvc.h>
 #include <GaudiKernel/MsgStream.h>
 
+// DD4hep
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Detector.h>
+
+// ACTS
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 // Root
 #include <TH1.h>
 #include <TFile.h>
@@ -20,6 +28,30 @@ TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLoc
 		KeyValue("InputMCParticleCollectionName", "MCParticle"),
 		KeyValue("InputTrackCollectionName", "Tracks"),
 	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations")}) {}
+
+void TrackPerfHistAlg::buildBfield() {
+  // Get the magnetic field
+  dd4hep::Detector& lcdd = dd4hep::Detector::getInstance();
+  const double position[3] = {
+      0, 0,
+      0};  // position to calculate magnetic field at (the origin in this case)
+  double magneticFieldVector[3] = {
+      0, 0, 0};  // initialise object to hold magnetic field
+  lcdd.field().magneticField(
+      position,
+      magneticFieldVector);  // get the magnetic field vector from DD4hep
+
+  // Build ACTS representation of field
+  // Note:
+  //  magneticFieldVector[2] = 3.57e-13
+  //  dd4hep::tesla = 1e-13
+  //  Acts::UnitConstants::T = 0.000299792
+  m_magneticField = std::make_shared<Acts::ConstantBField>(Acts::Vector3(
+      magneticFieldVector[0] / dd4hep::tesla * Acts::UnitConstants::T,
+      magneticFieldVector[1] / dd4hep::tesla * Acts::UnitConstants::T,
+      magneticFieldVector[2] / dd4hep::tesla * Acts::UnitConstants::T));
+  m_magFieldContext = Acts::MagneticFieldContext();
+}
 
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
@@ -77,7 +109,7 @@ void TrackPerfHistAlg::operator()(
 	log << MSG::DEBUG << "Track Collection Size: " << tracks.size() << endmsg;
 	for (const auto& trk : tracks) {
 		trkSet.push_back(trk);
-		m_allTracks->fill(&trk);
+		m_allTracks->fill(&trk, m_magneticField);
 	}
 	m_hNumber_of_tracks->Fill(trkSet.size());
 
@@ -104,11 +136,11 @@ void TrackPerfHistAlg::operator()(
 				return obj == trkObj;
 			});
 			if (itTRK != trkSet.end()) {
-				m_realTracks->fill(trk);
+				m_realTracks->fill(trk, m_magneticField);
 				m_realTruths->fill(mcp);
 				m_realTruths->effi(mcp, true);
-				m_realReso->fill(trk, mcp);
-				m_fakeTracks->effi(trk, false);
+				m_realReso->fill(trk, mcp, m_magneticField);
+				m_fakeTracks->effi(trk, false, m_magneticField);
 
 				mcpSet.erase(itMC);
 				trkSet.erase(itTRK);
@@ -122,8 +154,8 @@ void TrackPerfHistAlg::operator()(
 		m_realTruths->effi(&mcp, false);
 	}
 	for (auto& trk : trkSet) {
-		m_fakeTracks->fill(&trk);
-		m_fakeTracks->effi(&trk, true);
+		m_fakeTracks->fill(&trk, m_magneticField);
+		m_fakeTracks->effi(&trk, true, m_magneticField);
 	}
 	m_hNumber_of_fakes->Fill(trkSet.size());
 }
