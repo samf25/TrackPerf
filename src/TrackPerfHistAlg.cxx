@@ -77,6 +77,8 @@ StatusCode TrackPerfHistAlg::initialize() {
 
 	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "unmt", false);	
 	
+	TrackPerfHistAlg::buildBfield();
+
 	return StatusCode::SUCCESS;
 }
 
@@ -103,13 +105,16 @@ void TrackPerfHistAlg::operator()(
 		mcpSet.push_back(mcp);
 		m_allTruths->fill(&mcp);
 	}
+	
+	// Mag Cache
+	Acts::MagneticFieldProvider::Cache magCache = m_magneticField->makeCache(m_magFieldContext);
 
 	// Tracks
 	std::vector<edm4hep::Track> trkSet;
 	log << MSG::DEBUG << "Track Collection Size: " << tracks.size() << endmsg;
 	for (const auto& trk : tracks) {
 		trkSet.push_back(trk);
-		m_allTracks->fill(&trk, m_magneticField);
+		m_allTracks->fill(&trk, m_magneticField, magCache);
 	}
 	m_hNumber_of_tracks->Fill(trkSet.size());
 
@@ -136,11 +141,11 @@ void TrackPerfHistAlg::operator()(
 				return obj == trkObj;
 			});
 			if (itTRK != trkSet.end()) {
-				m_realTracks->fill(trk, m_magneticField);
+				m_realTracks->fill(trk, m_magneticField, magCache);
 				m_realTruths->fill(mcp);
 				m_realTruths->effi(mcp, true);
-				m_realReso->fill(trk, mcp, m_magneticField);
-				m_fakeTracks->effi(trk, false, m_magneticField);
+				m_realReso->fill(trk, mcp, m_magneticField, magCache);
+				m_fakeTracks->effi(trk, false, m_magneticField, magCache);
 
 				mcpSet.erase(itMC);
 				trkSet.erase(itTRK);
@@ -154,8 +159,8 @@ void TrackPerfHistAlg::operator()(
 		m_realTruths->effi(&mcp, false);
 	}
 	for (auto& trk : trkSet) {
-		m_fakeTracks->fill(&trk, m_magneticField);
-		m_fakeTracks->effi(&trk, true, m_magneticField);
+		m_fakeTracks->fill(&trk, m_magneticField, magCache);
+		m_fakeTracks->effi(&trk, true, m_magneticField, magCache);
 	}
 	m_hNumber_of_fakes->Fill(trkSet.size());
 }

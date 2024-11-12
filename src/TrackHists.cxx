@@ -1,6 +1,7 @@
 #include "TrackHists.hxx"
 
 #include <edm4hep/TrackState.h>
+
 #include <math.h>
 #include <TGraph.h>
 
@@ -87,7 +88,12 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 // Fill Histograms with relevant data
 void TrackHists::fill(const edm4hep::Track* track, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
 	const edm4hep::TrackState& state = track->getTrackStates(edm4hep::TrackState::AtIP);
-
+	
+	//TODO: This assumes uniform magnetic field
+	const Acts::Vector3 zeroPos(0, 0, 0);
+	Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+	float Bz = field[2] / Acts::UnitConstants::T;
+		
 	// pT
 	float pt = fabs(0.3 * Bz / state.omega / 1000);
 	h_pt->Fill(pt);
@@ -131,6 +137,11 @@ void TrackHists::fill(const edm4hep::Track* track, std::shared_ptr<Acts::Magneti
 void TrackHists::effi(const edm4hep::Track* track, bool passed, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
 	// Get track pt and eta
 	const edm4hep::TrackState& state = track->getTrackStates(edm4hep::TrackState::AtIP);
+
+	//TODO: This assumes uniform magnetic field
+	const Acts::Vector3 zeroPos(0, 0, 0);
+        Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+        float Bz = field[2] / Acts::UnitConstants::T;
 
 	double pt = fabs(0.3 * Bz / state.omega /1000);
 	double eta = -std::log(std::tan((1.57079632679 - std::atan(state.tanLambda))/2));

@@ -4,6 +4,11 @@
 #include <TH1.h>
 #include <TH2.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 // Standard
 #include <string>
 

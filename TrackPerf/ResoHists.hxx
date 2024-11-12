@@ -5,6 +5,11 @@
 #include <TH2.h>
 #include <TVector2.h>
 
+// ACTS
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+
 // Standard
 #include <string>
 

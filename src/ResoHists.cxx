@@ -22,7 +22,12 @@ ResoHists::ResoHists(ITHistSvc* histSvc, std::string folder) {
 }
 
 // Fill Histograms with relavant data
-void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, float Bz) {
+void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
+	//TODO: This assumes uniform magnetic field
+	const Acts::Vector3 zeroPos(0, 0, 0);
+        Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+        float Bz = field[2] / Acts::UnitConstants::T;
+	
 	// Get data
 	const edm4hep::TrackState& state = track->getTrackStates(edm4hep::TrackState::AtIP);
 	float track_pt = fabs(0.3 * Bz / state.omega / 1000);

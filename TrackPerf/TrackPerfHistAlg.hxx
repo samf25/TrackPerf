@@ -14,6 +14,9 @@
 #include <k4FWCore/BaseClass.h> // Is this needed?
 #include <GaudiKernel/ITHistSvc.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+
 // k4FWCore
 #include <k4FWCore/DataHandle.h>
 
