@@ -107,9 +107,6 @@ void TrackHists::fill(const edm4hep::Track* track, std::shared_ptr<Acts::Magneti
 	h_d0->Fill(state.D0);
 	h_z0->Fill(state.Z0);
 
-	auto trackStateBegin = track->trackStates_begin();
-    	auto trackStateEnd = track->trackStates_end();
-
 	// nhit
 	h_nhit->Fill(track->trackerHits_size());
 
