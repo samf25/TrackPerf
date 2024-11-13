@@ -4,6 +4,11 @@
 #include <TH1.h>
 #include <TH2.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 // Standard
 #include <string>
 
@@ -34,7 +39,7 @@ class TrackHists {
    * @brief Fill histograms with a single track
    * @param track The track to fill histograms
    */ 
-  void fill(const edm4hep::Track* track);
+  void fill(const edm4hep::Track* track, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache);
 
   /**
    * @brief Fill efficiency plots with sinlge track
@@ -42,15 +47,13 @@ class TrackHists {
    * @param track The track to fill the plots
    * @param passed Whether it is a passed or total element 
    */ 
-  void effi(const edm4hep::Track* track, bool passed);
+  void effi(const edm4hep::Track* track, bool passed, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache);
 
  private:
-  //! magnetic field to use for curvature -> pT conversion
-  float m_Bz = 3.57;
-
   //! Histograms to register information
   ///@{
   TH1* h_pt;
+  TH1* h_ptlog;
   TH1* h_lambda;
   TH1* h_phi;
   TH1* h_d0;

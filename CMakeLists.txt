@@ -18,7 +18,8 @@ gaudi_add_module(TrackPerfPlugins
         			ROOT::Hist
         			${ROOT_LIBRARIES} 
         			DD4hep::DDCore
-        			k4FWCore::k4FWCore )
+        			k4FWCore::k4FWCore 
+				ActsCore )
 
 INSTALL( TARGETS TrackPerfPlugins
 	EXPORT ${CMAKE_PROJECT_NAME}Targets

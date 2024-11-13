@@ -14,6 +14,9 @@
 #include <k4FWCore/BaseClass.h> // Is this needed?
 #include <GaudiKernel/ITHistSvc.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+
 // k4FWCore
 #include <k4FWCore/DataHandle.h>
 
@@ -65,10 +68,19 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
 		void operator()(const DataWrapper<edm4hep::MCParticleCollection>& mcParticles,
                 	const edm4hep::TrackCollection& tracks,
                 	const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const;
+		/**
+ 		 * @brief Builds the Magnetic field from dd4hep Detector information
+ 		 * @TODO: This can be done more naturally with a GeoSvc.
+ 		 */
+        	void buildBfield();
 
 	private:
 		//! Determination of good vs bad match
 		Gaudi::Property<float> m_matchProb{this, "MatchProb", 0.5, "Minimum matching probability to be considered a good track-MC match."};
+
+		//! Magnetic field to use for curvature -> pT conversion
+		std::shared_ptr<Acts::MagneticFieldProvider> m_magneticField;
+		Acts::MagneticFieldContext m_magFieldContext;
 
 		//! Histogram objects
 		///@{

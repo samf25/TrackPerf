@@ -1,15 +1,23 @@
 #include "TrackHists.hxx"
 
 #include <edm4hep/TrackState.h>
+
 #include <math.h>
 #include <TGraph.h>
 
 using namespace TrackPerf;
 
 TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
+	// Make Log Bounds
+	Double_t* binEdges = new Double_t[201];
+	for (int i =0; i <= 200; ++i) {
+		binEdges[i] = std::pow(10, i * 3.0/200.0);
+	}
 	// Make Histograms
 	h_pt = new TH1F("reco_pt", 
 			";Track p_{T} [GeV];Tracks [/0.1 GeV]", 200, 0, 1000);
+	h_ptlog = new TH1F("reco_ptlog",
+                        ";Track p_{T} [GeV];Tracks [/0.1 GeV]", 200, binEdges);
 	h_lambda = new TH1F("reco_lambda", 
 			";Track #lambda; Tracks", 100, -3.14, 3.14);
 	h_phi = new TH1F("reco_phi", 
@@ -45,6 +53,7 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	
 	// Register Histograms
 	(void)histSvc->regHist("/histos/"+folder+"/track_pt", h_pt);
+	(void)histSvc->regHist("/histos/"+folder+"/track_ptlog", h_ptlog);
 	(void)histSvc->regHist("/histos/"+folder+"/track_lambda", h_lambda);
 	(void)histSvc->regHist("/histos/"+folder+"/track_phi", h_phi);
 	(void)histSvc->regHist("/histos/"+folder+"/track_d0", h_d0);
@@ -77,13 +86,19 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 }
 
 // Fill Histograms with relevant data
-void TrackHists::fill(const edm4hep::Track* track) {
+void TrackHists::fill(const edm4hep::Track* track, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
 	const edm4hep::TrackState& state = track->getTrackStates(0);
-
+	
+	//TODO: This assumes uniform magnetic field
+	const Acts::Vector3 zeroPos(0, 0, 0);
+	Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+	float Bz = field[2] / Acts::UnitConstants::T;
+		
 	// pT
-	float pt = fabs(0.3 * m_Bz / state.omega / 1000);
+	float pt = fabs(0.3 * Bz / state.omega / 1000);
 	h_pt->Fill(pt);
+	h_ptlog->Fill(pt);
 
 	// Lambda, phi, d0, z0
 	float lambda = std::atan(state.tanLambda);
@@ -123,12 +138,17 @@ void TrackHists::fill(const edm4hep::Track* track) {
 }
 
 // Fill efficiency plots
-void TrackHists::effi(const edm4hep::Track* track, bool passed) {
+void TrackHists::effi(const edm4hep::Track* track, bool passed, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
 	// Get track pt and eta
 	const edm4hep::TrackState& state = track->getTrackStates(0);
 
-	double pt = fabs(0.3 * m_Bz / state.omega /1000);
+	//TODO: This assumes uniform magnetic field
+	const Acts::Vector3 zeroPos(0, 0, 0);
+        Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+        float Bz = field[2] / Acts::UnitConstants::T;
+
+	double pt = fabs(0.3 * Bz / state.omega /1000);
 	double eta = -std::log(std::tan((1.57079632679 - std::atan(state.tanLambda))/2));
 	
 	// Fill pt if within eta range
@@ -142,3 +162,5 @@ void TrackHists::effi(const edm4hep::Track* track, bool passed) {
 		if (passed) { h_effeta_passed->Fill(eta); }
 	}
 }
+
+
