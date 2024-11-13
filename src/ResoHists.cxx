@@ -24,7 +24,8 @@ ResoHists::ResoHists(ITHistSvc* histSvc, std::string folder) {
 // Fill Histograms with relavant data
 void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle) {
 	// Get data
-	const edm4hep::TrackState& state = track->getTrackStates(edm4hep::TrackState::AtIP);
+	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
+	const edm4hep::TrackState& state = track->getTrackStates(0);
 	float track_pt = fabs(0.3 * m_Bz / state.omega / 1000);
 	float track_lambda = std::atan(state.tanLambda);
 
