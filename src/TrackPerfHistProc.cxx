@@ -117,7 +117,7 @@ void TrackPerfHistProc::processRunHeader(LCRunHeader* /*run*/) {}
 
 void TrackPerfHistProc::processEvent(LCEvent* evt) {
   // Mag Cache
-  Acts::MagneticFieldProvider::Cache magCache = _magneticField->makeCache(m_magFieldContext);
+  Acts::MagneticFieldProvider::Cache magCache = _magneticField->makeCache(_magFieldContext);
 
   //
   // Get object required collections and create lists
