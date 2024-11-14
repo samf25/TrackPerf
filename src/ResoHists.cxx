@@ -24,12 +24,13 @@ ResoHists::ResoHists() {
 
 void ResoHists::fill(const EVENT::Track* track,
                      const EVENT::MCParticle* particle, 
-		     std::shared_ptr<Acts::MagneticFieldProvider> magField,
-		     Acts::MagneticFieldProvider::Cache& magCache) {
+		     dd4hep::Detector* lcdd) {
   //TODO: This assumes uniform magnetic field
-  const Acts::Vector3 zeroPos(0, 0, 0);
-  Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
-  float Bz = field[2] / Acts::UnitConstants::T;
+  const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
+  double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
+  lcdd->field().magneticField(
+        position, magneticFieldVector); // get the magnetic field vector from DD4hep
+  float Bz = magneticFieldVector[2] / dd4hep::tesla;
   
   float track_pt = fabs(0.3 * Bz / track->getOmega() / 1000);
   float track_lambda = std::atan(track->getTanLambda());

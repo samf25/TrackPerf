@@ -3,10 +3,9 @@
 #include <TH1.h>
 #include <TH2.h>
 
-// ACTS
-#include <Acts/MagneticField/MagneticFieldProvider.hpp>
-#include <Acts/Definitions/Units.hpp>
-#include <Acts/MagneticField/ConstantBField.hpp>
+// DD4hep
+#include <DD4hep/Detector.h>
+#include <DD4hep/DD4hepUnits.h>
 
 namespace EVENT {
 class Track;
@@ -24,8 +23,7 @@ class TrackHists {
 
   // Fill histograms with a single track
   void fill(const EVENT::Track* track,
-            std::shared_ptr<Acts::MagneticFieldProvider> magField,
-            Acts::MagneticFieldProvider::Cache& magCache);
+            dd4hep::Detector* lcdd);
 
  private:
   //! Reconstructed track pT

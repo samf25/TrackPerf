@@ -4,8 +4,8 @@
 
 #include <marlin/Processor.h>
 
-// ACTS
-#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+// DD4hep
+#include <DD4hep/Detector.h>
 
 namespace TrackPerf {
 class TrackHists;
@@ -42,11 +42,6 @@ class TrackPerfHistProc : public marlin::Processor {
    */
   virtual void end();
 
-  /**
-   * @brief Builds the Magnetic field from dd4hep Detector information
-   */
-  void buildBfield();
-
  private:
   //! Track Collection
   std::string _trkColName{};
@@ -58,8 +53,8 @@ class TrackPerfHistProc : public marlin::Processor {
   std::string _trkMatchColName{};
 
   //! Magnetic field to use for curvature -> pT conversion
-  std::shared_ptr<Acts::MagneticFieldProvider> _magneticField;
-  Acts::MagneticFieldContext _magFieldContext;
+  dd4hep::Detector* _lcdd;
+
 
   //! Determination of good vs bad match
   float _matchProb = 0.5;

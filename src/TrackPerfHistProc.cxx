@@ -10,10 +10,6 @@
 #include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/Detector.h>
 
-// ACTS
-#include <Acts/Definitions/Units.hpp>
-#include <Acts/MagneticField/ConstantBField.hpp>
-
 #include <AIDA/ITree.h>
 #include <marlin/AIDAProcessor.h>
 #include <set>
@@ -52,31 +48,6 @@ TrackPerfHistProc::TrackPerfHistProc() : Processor("TrackPerfHistProc") {
       _trkMatchColName, _trkMatchColName);
 }
 
-void TrackPerfHistProc::buildBfield() {
-  // Get the magnetic field
-  dd4hep::Detector& lcdd = dd4hep::Detector::getInstance();
-  const double position[3] = {
-      0, 0,
-      0};  // position to calculate magnetic field at (the origin in this case)
-  double magneticFieldVector[3] = {
-      0, 0, 0};  // initialise object to hold magnetic field
-  lcdd.field().magneticField(
-      position,
-      magneticFieldVector);  // get the magnetic field vector from DD4hep
-
-  // Build ACTS representation of field
-  // Note:
-  //  magneticFieldVector[2] = 3.57e-13
-  //  dd4hep::tesla = 1e-13
-  //  Acts::UnitConstants::T = 0.000299792
-  _magneticField = std::make_shared<Acts::ConstantBField>(Acts::Vector3(
-      magneticFieldVector[0] / dd4hep::tesla * Acts::UnitConstants::T,
-      magneticFieldVector[1] / dd4hep::tesla * Acts::UnitConstants::T,
-      magneticFieldVector[2] / dd4hep::tesla * Acts::UnitConstants::T));
-  _magFieldContext = Acts::MagneticFieldContext();
-}
-
-
 void TrackPerfHistProc::init() {
   // Print the initial parameters
   printParameters();
@@ -110,15 +81,12 @@ void TrackPerfHistProc::init() {
   _effiPlots = std::make_shared<TrackPerf::EfficiencyHists>(true);
   _fakePlots = std::make_shared<TrackPerf::EfficiencyHists>(false);
   
-  TrackPerfHistProc::buildBfield();
+  _lcdd = &dd4hep::Detector::getInstance();
 }
 
 void TrackPerfHistProc::processRunHeader(LCRunHeader* /*run*/) {}
 
 void TrackPerfHistProc::processEvent(LCEvent* evt) {
-  // Mag Cache
-  Acts::MagneticFieldProvider::Cache magCache = _magneticField->makeCache(_magFieldContext);
-
   //
   // Get object required collections and create lists
   // to keep track of unsaved objects.
@@ -173,7 +141,7 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
         static_cast<const EVENT::Track*>(trkCol->getElementAt(i));
 
     trkSet.insert(trk);
-    _allTracks->fill(trk, _magneticField, magCache);
+    _allTracks->fill(trk, _lcdd);
   }
   h_number_of_tracks->Fill(trkSet.size());
 
@@ -198,11 +166,11 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
 
     if (rel->getWeight() > _matchProb) {
       if (trkSet.find(trk) != trkSet.end()) {
-        _realTracks->fill(trk, _magneticField, magCache);
+        _realTracks->fill(trk, _lcdd);
         _realTruths->fill(mcp);
 	_effiPlots->fillMC(mcp, true);
-        _realReso->fill(trk, mcp, _magneticField, magCache);
-	_fakePlots->fillTrack(trk, false, _magneticField, magCache);
+        _realReso->fill(trk, mcp, _lcdd);
+	_fakePlots->fillTrack(trk, false, _lcdd);
 
         mcpSet.erase(mcp);
         trkSet.erase(trk);
@@ -217,8 +185,8 @@ void TrackPerfHistProc::processEvent(LCEvent* evt) {
     _effiPlots->fillMC(mcp, false);
   }
   for (const EVENT::Track* trk : trkSet) {
-    _fakeTracks->fill(trk, _magneticField, magCache);
-    _fakePlots->fillTrack(trk, true, _magneticField, magCache);
+    _fakeTracks->fill(trk, _lcdd);
+    _fakePlots->fillTrack(trk, true, _lcdd);
   }
   h_number_of_fakes->Fill(trkSet.size());
 }
