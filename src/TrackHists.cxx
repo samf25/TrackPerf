@@ -86,14 +86,14 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 }
 
 // Fill Histograms with relevant data
-void TrackHists::fill(const edm4hep::Track* track, dd4hep::Detector& lcdd) {
+void TrackHists::fill(const edm4hep::Track* track, dd4hep::Detector* lcdd) {
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
 	const edm4hep::TrackState& state = track->getTrackStates(0);
 	
 	//TODO: This assumes uniform magnetic field
 	const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
         double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
-        lcdd.field().magneticField(
+        lcdd->field().magneticField(
                         position, magneticFieldVector); // get the magnetic field vector from DD4hep
         float Bz = magneticFieldVector[2] / dd4hep::tesla;
 		
@@ -137,14 +137,14 @@ void TrackHists::fill(const edm4hep::Track* track, dd4hep::Detector& lcdd) {
 }
 
 // Fill efficiency plots
-void TrackHists::effi(const edm4hep::Track* track, bool passed, dd4hep::Detector& lcdd) {
+void TrackHists::effi(const edm4hep::Track* track, bool passed, dd4hep::Detector* lcdd) {
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
 	const edm4hep::TrackState& state = track->getTrackStates(0);
 
 	//TODO: This assumes uniform magnetic field
 	const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
         double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
-        lcdd.field().magneticField(
+        lcdd->field().magneticField(
                         position, magneticFieldVector); // get the magnetic field vector from DD4hep
         float Bz = magneticFieldVector[2] / dd4hep::tesla;
 

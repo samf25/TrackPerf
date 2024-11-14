@@ -22,11 +22,11 @@ ResoHists::ResoHists(ITHistSvc* histSvc, std::string folder) {
 }
 
 // Fill Histograms with relavant data
-void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, dd4hep::Detector& lcdd) {
+void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, dd4hep::Detector* lcdd) {
 	//TODO: This assumes uniform magnetic field
 	const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
         double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
-        lcdd.field().magneticField(
+        lcdd->field().magneticField(
                         position, magneticFieldVector); // get the magnetic field vector from DD4hep
         float Bz = magneticFieldVector[2] / dd4hep::tesla;
 

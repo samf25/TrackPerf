@@ -39,8 +39,9 @@ class ResoHists {
    * @brief Fill histograms with a single track
    * @param track The track to fill histograms
    * @param particle The MC particle connected to the Track
+   * @param lcdd DD4hep detector to retrieve B field
    */
-  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, dd4hep::Detector& lcdd);
+  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, dd4hep::Detector* lcdd);
 
  private:
   //! Histograms to register information

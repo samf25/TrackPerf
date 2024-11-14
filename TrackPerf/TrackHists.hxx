@@ -37,16 +37,18 @@ class TrackHists {
   /**
    * @brief Fill histograms with a single track
    * @param track The track to fill histograms
+   * @param lcdd DD4hep detector to retrieve B field
    */ 
-  void fill(const edm4hep::Track* track, dd4hep::Detector& lcdd);
+  void fill(const edm4hep::Track* track, dd4hep::Detector* lcdd);
 
   /**
    * @brief Fill efficiency plots with sinlge track
    * @TODO: Currently there is no way to register TEfficiency plots. So this makes a total and a passed histogram that can be combined in an external script into a TEfficiency plot.
    * @param track The track to fill the plots
-   * @param passed Whether it is a passed or total element 
+   * @param passed Whether it is a passed or total element
+   * @param lcdd DD4hep detector to retrieve B field
    */ 
-  void effi(const edm4hep::Track* track, bool passed, dd4hep::Detector& lcdd);
+  void effi(const edm4hep::Track* track, bool passed, dd4hep::Detector* lcdd);
 
  private:
   //! Histograms to register information
