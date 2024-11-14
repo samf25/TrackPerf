@@ -3,6 +3,11 @@
 #include <TH1.h>
 #include <TH2.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 namespace EVENT {
 class Track;
 }
@@ -18,12 +23,11 @@ class TrackHists {
   TrackHists();
 
   // Fill histograms with a single track
-  void fill(const EVENT::Track* track);
+  void fill(const EVENT::Track* track,
+            std::shared_ptr<Acts::MagneticFieldProvider> magField,
+            Acts::MagneticFieldProvider::Cache& magCache);
 
  private:
-  //! magnetic field to use for curvature -> pT conversion
-  float _Bz = 3.57;
-
   //! Reconstructed track pT
   TH1* h_pt;
   TH1* h_lambda;

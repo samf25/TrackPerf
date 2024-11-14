@@ -5,6 +5,11 @@
 #include <TVector2.h>
 #include <TMath.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 namespace EVENT {
 class Track;
 class MCParticle;
@@ -22,12 +27,11 @@ class EfficiencyHists {
 
   // Fill histograms with a single track
   void fillMC(const EVENT::MCParticle* track, bool passed);
-  void fillTrack(const EVENT::Track* track, bool passed);
+  void fillTrack(const EVENT::Track* track, bool passed,
+                 std::shared_ptr<Acts::MagneticFieldProvider> magField,
+                 Acts::MagneticFieldProvider::Cache& magCache);
 
  private:
-  //! magnetic field to use for curvature -> pT conversion
-  float _Bz = 3.57;
-
   //! Efficiency plots
   TEfficiency* h_effpt;
   TEfficiency* h_efftheta;

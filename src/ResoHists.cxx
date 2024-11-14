@@ -23,8 +23,15 @@ ResoHists::ResoHists() {
 }
 
 void ResoHists::fill(const EVENT::Track* track,
-                     const EVENT::MCParticle* particle) {
-  float track_pt = fabs(0.3 * _Bz / track->getOmega() / 1000);
+                     const EVENT::MCParticle* particle, 
+		     std::shared_ptr<Acts::MagneticFieldProvider> magField,
+		     Acts::MagneticFieldProvider::Cache& magCache) {
+  //TODO: This assumes uniform magnetic field
+  const Acts::Vector3 zeroPos(0, 0, 0);
+  Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+  float Bz = field[2] / Acts::UnitConstants::T;
+  
+  float track_pt = fabs(0.3 * Bz / track->getOmega() / 1000);
   float track_lambda = std::atan(track->getTanLambda());
 
   const double* mom = particle->getMomentum();

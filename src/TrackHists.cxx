@@ -32,8 +32,15 @@ TrackHists::TrackHists() {
                20, -0.5, 19.5);
 }
 
-void TrackHists::fill(const EVENT::Track* track) {
-  float pt = fabs(0.3 * _Bz / track->getOmega() / 1000);
+void TrackHists::fill(const EVENT::Track* track, 
+		      std::shared_ptr<Acts::MagneticFieldProvider> magField,
+		      Acts::MagneticFieldProvider::Cache& magCache) {
+  //TODO: This assumes uniform magnetic field
+  const Acts::Vector3 zeroPos(0, 0, 0);
+  Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
+  float Bz = field[2] / Acts::UnitConstants::T;
+  
+  float pt = fabs(0.3 * Bz / track->getOmega() / 1000);
   h_pt->Fill(pt);
 
   float lambda = std::atan(track->getTanLambda());

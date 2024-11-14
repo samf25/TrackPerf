@@ -4,6 +4,11 @@
 #include <TH2.h>
 #include <TVector2.h>
 
+// ACTS
+#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 namespace EVENT {
 class Track;
 class MCParticle;
@@ -20,12 +25,12 @@ class ResoHists {
   ResoHists();
 
   // Fill histograms with a single track
-  void fill(const EVENT::Track* track, const EVENT::MCParticle* particle);
+  void fill(const EVENT::Track* track,
+            const EVENT::MCParticle* particle,
+            std::shared_ptr<Acts::MagneticFieldProvider> magField,
+            Acts::MagneticFieldProvider::Cache& magCache);
 
  private:
-  //! magnetic field to use for curvature -> pT conversion
-  float _Bz = 3.57;
-
   //! Reconstructed track pT
   TH2* h_track_truth_pt;
   TH1* h_reso_pt_rel;
