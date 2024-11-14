@@ -6,6 +6,14 @@
 #include <EVENT/MCParticle.h>
 #include <EVENT/Track.h>
 
+// DD4hep
+#include <DD4hep/DD4hepUnits.h>
+#include <DD4hep/Detector.h>
+
+// ACTS
+#include <Acts/Definitions/Units.hpp>
+#include <Acts/MagneticField/ConstantBField.hpp>
+
 #include <AIDA/ITree.h>
 #include <marlin/AIDAProcessor.h>
 #include <set>
@@ -44,7 +52,7 @@ TrackPerfHistProc::TrackPerfHistProc() : Processor("TrackPerfHistProc") {
       _trkMatchColName, _trkMatchColName);
 }
 
-void TrackPerfHistAlg::buildBfield() {
+void TrackPerfHistProc::buildBfield() {
   // Get the magnetic field
   dd4hep::Detector& lcdd = dd4hep::Detector::getInstance();
   const double position[3] = {
