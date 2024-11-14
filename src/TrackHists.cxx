@@ -86,14 +86,16 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 }
 
 // Fill Histograms with relevant data
-void TrackHists::fill(const edm4hep::Track* track, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
+void TrackHists::fill(const edm4hep::Track* track, dd4hep::Detector& lcdd) {
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
 	const edm4hep::TrackState& state = track->getTrackStates(0);
 	
 	//TODO: This assumes uniform magnetic field
-	const Acts::Vector3 zeroPos(0, 0, 0);
-	Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
-	float Bz = field[2] / Acts::UnitConstants::T;
+	const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
+        double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
+        lcdd.field().magneticField(
+                        position, magneticFieldVector); // get the magnetic field vector from DD4hep
+        float Bz = magneticFieldVector[2] / dd4hep::tesla;
 		
 	// pT
 	float pt = fabs(0.3 * Bz / state.omega / 1000);
@@ -135,16 +137,18 @@ void TrackHists::fill(const edm4hep::Track* track, std::shared_ptr<Acts::Magneti
 }
 
 // Fill efficiency plots
-void TrackHists::effi(const edm4hep::Track* track, bool passed, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
+void TrackHists::effi(const edm4hep::Track* track, bool passed, dd4hep::Detector& lcdd) {
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?
-	// Get track pt and eta
 	const edm4hep::TrackState& state = track->getTrackStates(0);
 
 	//TODO: This assumes uniform magnetic field
-	const Acts::Vector3 zeroPos(0, 0, 0);
-        Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
-        float Bz = field[2] / Acts::UnitConstants::T;
+	const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
+        double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
+        lcdd.field().magneticField(
+                        position, magneticFieldVector); // get the magnetic field vector from DD4hep
+        float Bz = magneticFieldVector[2] / dd4hep::tesla;
 
+	// Get track pt and eta
 	double pt = fabs(0.3 * Bz / state.omega /1000);
 	double eta = -std::log(std::tan((1.57079632679 - std::atan(state.tanLambda))/2));
 	

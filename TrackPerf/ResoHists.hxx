@@ -5,10 +5,9 @@
 #include <TH2.h>
 #include <TVector2.h>
 
-// ACTS
-#include <Acts/Definitions/Units.hpp>
-#include <Acts/MagneticField/ConstantBField.hpp>
-#include <Acts/MagneticField/MagneticFieldProvider.hpp>
+// DD4hep
+#include <DD4hep/Detector.h>
+#include <DD4hep/DD4hepUnits.h>
 
 // Standard
 #include <string>
@@ -41,7 +40,7 @@ class ResoHists {
    * @param track The track to fill histograms
    * @param particle The MC particle connected to the Track
    */
-  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache);
+  void fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, dd4hep::Detector& lcdd);
 
  private:
   //! Histograms to register information

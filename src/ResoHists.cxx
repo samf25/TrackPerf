@@ -22,11 +22,14 @@ ResoHists::ResoHists(ITHistSvc* histSvc, std::string folder) {
 }
 
 // Fill Histograms with relavant data
-void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache) {
+void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* particle, dd4hep::Detector& lcdd) {
 	//TODO: This assumes uniform magnetic field
-	const Acts::Vector3 zeroPos(0, 0, 0);
-        Acts::Vector3 field = (*magField->getField(zeroPos, magCache));
-        float Bz = field[2] / Acts::UnitConstants::T;
+	const double position[3] = {0, 0, 0};           // position to calculate magnetic field (here, the origin)
+        double magneticFieldVector[3] = {0, 0, 0};      // initialise object to hold magnetic field
+        lcdd.field().magneticField(
+                        position, magneticFieldVector); // get the magnetic field vector from DD4hep
+        float Bz = magneticFieldVector[2] / dd4hep::tesla;
+
 	
 	// Get data
 	// TODO: This was initially edm4hep::TrackState::AtIP, but that was wrong. 0 is right. Better way to do this?

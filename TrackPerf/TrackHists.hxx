@@ -4,10 +4,9 @@
 #include <TH1.h>
 #include <TH2.h>
 
-// ACTS
-#include <Acts/MagneticField/MagneticFieldProvider.hpp>
-#include <Acts/Definitions/Units.hpp>
-#include <Acts/MagneticField/ConstantBField.hpp>
+// DD4hep
+#include <DD4hep/Detector.h>
+#include <DD4hep/DD4hepUnits.h>
 
 // Standard
 #include <string>
@@ -39,7 +38,7 @@ class TrackHists {
    * @brief Fill histograms with a single track
    * @param track The track to fill histograms
    */ 
-  void fill(const edm4hep::Track* track, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache);
+  void fill(const edm4hep::Track* track, dd4hep::Detector& lcdd);
 
   /**
    * @brief Fill efficiency plots with sinlge track
@@ -47,7 +46,7 @@ class TrackHists {
    * @param track The track to fill the plots
    * @param passed Whether it is a passed or total element 
    */ 
-  void effi(const edm4hep::Track* track, bool passed, std::shared_ptr<Acts::MagneticFieldProvider> magField, Acts::MagneticFieldProvider::Cache& magCache);
+  void effi(const edm4hep::Track* track, bool passed, dd4hep::Detector& lcdd);
 
  private:
   //! Histograms to register information
