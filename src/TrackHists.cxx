@@ -23,11 +23,13 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	h_phi = new TH1F("reco_phi", 
 			";Track #phi; Tracks", 100, -3.14, 3.14);
 	h_d0 = new TH1F("reco_d0", 
-			";Track d_{0} [mm]; Tracks [/0.2 mm]", 100, -10, 10);
+			";Track d_{0} [mm]; Tracks [/0.2 mm]", 300, -5, 5);
 	h_z0 = new TH1F("reco_z0", 
-			";Track z_{0} [mm]; Tracks [/0.2 mm]", 100, -10, 10);
+			";Track z_{0} [mm]; Tracks [/0.2 mm]", 300, -5, 5);
 	h_nhit = new TH1F("reco_nhit", 
 			";Track Hits; Tracks [/hit]", 20, -0.5, 19.5);
+	h_z0_d0 = new TH2F("z0_vs_d0", ";z0 [mm];d0 [mm]",
+			    300, -3, 3, 300, -3, 3);
 	h_lambda_nhit = new TH2F("lambda_vs_nhit", 
 			";Track #lambda; Track Hits", 
 			100, -3.14, 3.14, 20, -0.5, 19.5);
@@ -67,6 +69,7 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	(void)histSvc->regHist("/histos/"+folder+"/track_nhit3", h_nhit3);
 	(void)histSvc->regHist("/histos/"+folder+"/track_z0_nhit", h_z0_nhit);
 	(void)histSvc->regHist("/histos/"+folder+"/track_z0_pt", h_z0_pt);
+	(void)histSvc->regHist("/histos/"+folder+"/track_z0_d0", h_z0_d0);
 	// Efficiency plots
 	if (effi) {
 		h_effpt_total = new TH1F("eff_fake_pt_total", 
@@ -108,6 +111,7 @@ void TrackHists::fill(const edm4hep::Track* track, dd4hep::Detector* lcdd) {
 	h_phi->Fill(state.phi);
 	h_d0->Fill(state.D0);
 	h_z0->Fill(state.Z0);
+	h_z0_d0->Fill(state.Z0,state.D0);
 
 	// nhit
 	h_nhit->Fill(track->trackerHits_size());
