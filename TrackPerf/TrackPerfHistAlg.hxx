@@ -31,6 +31,7 @@ namespace TrackPerf {
 class TrackHists;
 class TruthHists;
 class ResoHists;
+class HighpTHists;
 }  // namespace TrackPerf
 
 /**
@@ -85,6 +86,7 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
 		std::shared_ptr<TrackPerf::TruthHists> m_realTruths;
 		std::shared_ptr<TrackPerf::TruthHists> m_unmtTruths;
 		std::shared_ptr<TrackPerf::ResoHists> m_realReso;
+		std::shared_ptr<TrackPerf::HighpTHists> m_highpT;
 		///@}
 
 		//! Multiplicity histograms

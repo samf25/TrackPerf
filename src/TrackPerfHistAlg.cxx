@@ -16,6 +16,7 @@
 #include "ResoHists.hxx"
 #include "TrackHists.hxx"
 #include "TruthHists.hxx"
+#include "HighpTHists.hxx"
 
 DECLARE_COMPONENT(TrackPerfHistAlg)
 
@@ -46,6 +47,8 @@ StatusCode TrackPerfHistAlg::initialize() {
 	m_fakeTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "fake", true);
 	m_hNumber_of_fakes = new TH1F("Number_of_fakes", "Number of fake tracks;Events", 100, 0, 300000);
 	(void)histSvc->regHist("/histos/fake/Number_of_fakes", m_hNumber_of_fakes);
+
+	m_highpT = std::make_shared<TrackPerf::HighpTHists>(histSvc, "high");
 
 	m_unmtTruths = std::make_shared<TrackPerf::TruthHists>(histSvc, "unmt", false);	
 	
@@ -116,6 +119,8 @@ void TrackPerfHistAlg::operator()(
 				m_realReso->fill(trk, mcp, m_lcdd);
 				m_fakeTracks->effi(trk, false, m_lcdd);
 
+				m_highpT->fill(trk, m_lcdd);
+
 				mcpSet.erase(itMC);
 				trkSet.erase(itTRK);
 			}	
@@ -130,6 +135,7 @@ void TrackPerfHistAlg::operator()(
 	for (auto& trk : trkSet) {
 		m_fakeTracks->fill(&trk, m_lcdd);
 		m_fakeTracks->effi(&trk, true, m_lcdd);
+		m_highpT->fill(&trk, m_lcdd);
 	}
 	m_hNumber_of_fakes->Fill(trkSet.size());
 }
