@@ -119,8 +119,6 @@ void TrackPerfHistAlg::operator()(
 				m_realReso->fill(trk, mcp, m_lcdd);
 				m_fakeTracks->effi(trk, false, m_lcdd);
 
-				m_highpT->fill(trk, m_lcdd);
-
 				mcpSet.erase(itMC);
 				trkSet.erase(itTRK);
 			}	
