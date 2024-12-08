@@ -37,7 +37,7 @@ void ResoHists::fill(const edm4hep::Track* track, const edm4hep::MCParticle* par
 	float track_pt = fabs(0.3 * Bz / state.omega / 1000);
 	float track_lambda = std::atan(state.tanLambda);
 
-	const edm4hep::Vector3f& mom = particle->getMomentum();
+	const edm4hep::Vector3d& mom = particle->getMomentum();
 	double truth_pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 	double truth_lambda = std::atan2(mom.z, truth_pt);
 	double truth_phi = std::atan2(mom.y, mom.x);

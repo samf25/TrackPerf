@@ -43,7 +43,7 @@ TruthHists::TruthHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 // Fill all Histograms with relavent data
 void TruthHists::fill(const edm4hep::MCParticle* particle) {
 	// pT
-	const edm4hep::Vector3f& mom = particle->getMomentum();
+	const edm4hep::Vector3d& mom = particle->getMomentum();
 	double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 	h_pt->Fill(pt);
 
@@ -65,7 +65,7 @@ void TruthHists::fill(const edm4hep::MCParticle* particle) {
 // Fill Efficiency Plots with data
 void TruthHists::effi(const edm4hep::MCParticle* particle, bool passed) {
 	// Get particle pt and eta
-	const edm4hep::Vector3f& mom = particle->getMomentum();
+	const edm4hep::Vector3d& mom = particle->getMomentum();
 	double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 	double eta = std::atanh(mom.z / std::sqrt(std::pow(pt, 2) + std::pow(mom.z, 2)));
 	

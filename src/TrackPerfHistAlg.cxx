@@ -22,9 +22,9 @@ DECLARE_COMPONENT(TrackPerfHistAlg)
 
 // Implement Constructor
 TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLocator) : Consumer(name, pSvcLocator, {
-		KeyValue("InputMCParticleCollectionName", "MCParticle"),
-		KeyValue("InputTrackCollectionName", "Tracks"),
-	       	KeyValue("InputMCTrackRelationCollectionName", "MCTrackRelations")}) {}
+		KeyValues("InputMCParticleCollectionName", {"MCParticle"}),
+		KeyValues("InputTrackCollectionName", {"Tracks"}),
+	       	KeyValues("InputMCTrackRelationCollectionName", {"MCTrackRelations"})}) {}
 
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
@@ -59,19 +59,19 @@ StatusCode TrackPerfHistAlg::initialize() {
 
 // Implement operator (To be run on each event -- the workhorse)
 void TrackPerfHistAlg::operator()(
-			const DataWrapper<edm4hep::MCParticleCollection>& mcParticles,
+			const edm4hep::MCParticleCollection& mcParticles,
                         const edm4hep::TrackCollection& tracks,
-                        const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const{
+                        const edm4hep::TrackMCParticleLinkCollection& trackToMCRelations) const{
 	MsgStream log(msgSvc(), name());
 	// MC Particles
 	std::vector<edm4hep::MCParticle> mcpSet;
-	for (const auto& mcp : *mcParticles.getData()) {
+	for (const auto& mcp : mcParticles) {
 		if (mcp.getGeneratorStatus() != 1) { continue; }
 		if (mcp.getCharge() == 0) { continue; }
 		if (mcp.isDecayedInTracker()) { continue; }
 	
 		// Tracker Acceptance
-		const edm4hep::Vector3f& mom = mcp.getMomentum();
+		const edm4hep::Vector3d& mom = mcp.getMomentum();
 		double pt = std::sqrt(std::pow(mom.x, 2) + std::pow(mom.y, 2));
 		double lambda = std::atan2(mom.z, pt);
 		
@@ -92,9 +92,9 @@ void TrackPerfHistAlg::operator()(
 
 	// Loop over MC Relations and save matched objects
 	for (const auto& rel : trackToMCRelations) {
-		const edm4hep::MCParticle mcpObj = rel.getSim();
+		const edm4hep::MCParticle mcpObj = rel.getTo();
 		const edm4hep::MCParticle* mcp = &mcpObj;
-		const edm4hep::Track trkObj = rel.getRec();
+		const edm4hep::Track trkObj = rel.getFrom();
 		const edm4hep::Track* trk = &trkObj;
 		// Look for mcpObj in mcpSet
 		auto itMC = std::find_if(mcpSet.begin(), mcpSet.end(), [this, mcpObj](edm4hep::MCParticle obj) { 

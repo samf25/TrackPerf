@@ -5,13 +5,10 @@
 #include <edm4hep/TrackCollection.h>
 #include <edm4hep/MCParticle.h>
 #include <edm4hep/Track.h>
-#include <edm4hep/MCRecoTrackParticleAssociationCollection.h>
+#include <edm4hep/TrackMCParticleLinkCollection.h>
 
 // Gaudi
-#include <GaudiAlg/GaudiAlgorithm.h>
-#include <GaudiAlg/Consumer.h>
 #include <Gaudi/Property.h>
-#include <k4FWCore/BaseClass.h> // Is this needed?
 #include <GaudiKernel/ITHistSvc.h>
 
 // DD4hep
@@ -19,6 +16,7 @@
 
 // k4FWCore
 #include <k4FWCore/DataHandle.h>
+#include <k4FWCore/Consumer.h>
 
 // Root
 #include <TH1.h>
@@ -44,10 +42,10 @@ class HighpTHists;
  * @author Samuel Ferraro
  * @author Unknown
  */
-struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
-		const DataWrapper<edm4hep::MCParticleCollection> &,
+struct TrackPerfHistAlg final : k4FWCore::Consumer<void(
+		const edm4hep::MCParticleCollection &,
 		const edm4hep::TrackCollection &,
-		const edm4hep::MCRecoTrackParticleAssociationCollection &)> {
+		const edm4hep::TrackMCParticleLinkCollection &)> {
 	public:
 		/**
  	 	 * @brief Constructer for the TrackPerfHistAlg
@@ -66,9 +64,9 @@ struct TrackPerfHistAlg final : Gaudi::Functional::Consumer<void(
  		 * @param tracks The collection of reconstructed, deduped, filtered tracks
  		 * @param trackToMCRelations The collection of associations between MC particles and tracks
  		 */ 
-		void operator()(const DataWrapper<edm4hep::MCParticleCollection>& mcParticles,
+		void operator()(const edm4hep::MCParticleCollection& mcParticles,
                 	const edm4hep::TrackCollection& tracks,
-                	const edm4hep::MCRecoTrackParticleAssociationCollection& trackToMCRelations) const;
+                	const edm4hep::TrackMCParticleLinkCollection& trackToMCRelations) const;
 
 	private:
 		//! Determination of good vs bad match
