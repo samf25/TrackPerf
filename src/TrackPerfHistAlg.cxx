@@ -29,11 +29,7 @@ TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLoc
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
 	// Get Histogram and Data Services
-	ITHistSvc* histSvc{nullptr};
-	StatusCode sc1 = service("THistSvc", histSvc);
-	if ( sc1.isFailure() ) { 
-		error() << "Could not locate HistSvc" << endmsg;
-		return StatusCode::FAILURE; }
+	ITHistSvc* histSvc = serviceLocator()->service("HistSvc");
 
 	// Make Histograms
 	m_allTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "all", false);

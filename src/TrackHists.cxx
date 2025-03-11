@@ -51,6 +51,7 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	h_z0_pt = new TH2F("z0_vs_pt",
 			";Track z0; Track p_{T} [GeV]",
 			100, -10, 10, 200, 0, 1000);
+	h_nholes = new TH1F("reco_nholes", ";Track nHoles; Tracks", 10, 0, 9);
 
 	
 	// Register Histograms
@@ -70,6 +71,7 @@ TrackHists::TrackHists(ITHistSvc* histSvc, std::string folder, bool effi) {
 	(void)histSvc->regHist("/histos/"+folder+"/track_z0_nhit", h_z0_nhit);
 	(void)histSvc->regHist("/histos/"+folder+"/track_z0_pt", h_z0_pt);
 	(void)histSvc->regHist("/histos/"+folder+"/track_z0_d0", h_z0_d0);
+	(void)histSvc->regHist("/histos/"+folder+"/track_nholes", h_nholes);
 	// Efficiency plots
 	if (effi) {
 		h_effpt_total = new TH1F("eff_fake_pt_total", 
@@ -112,6 +114,7 @@ void TrackHists::fill(const edm4hep::Track* track, dd4hep::Detector* lcdd) {
 	h_d0->Fill(state.D0);
 	h_z0->Fill(state.Z0);
 	h_z0_d0->Fill(state.Z0,state.D0);
+	h_nholes->Fill(track->getNholes());
 
 	// nhit
 	h_nhit->Fill(track->trackerHits_size());
