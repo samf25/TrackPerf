@@ -29,7 +29,8 @@ TrackPerfHistAlg::TrackPerfHistAlg(const std::string& name, ISvcLocator* pSvcLoc
 // Implement Initializer
 StatusCode TrackPerfHistAlg::initialize() {
 	// Get Histogram and Data Services
-	SmartIF<ITHistSvc> histSvc = serviceLocator()->service("HistSvc");
+	SmartIF<ITHistSvc> histSvc;
+	histSvc = serviceLocator()->service("THistSvc");
 
 	// Make Histograms
 	m_allTracks = std::make_shared<TrackPerf::TrackHists>(histSvc, "all", false);
@@ -58,7 +59,6 @@ void TrackPerfHistAlg::operator()(
 			const edm4hep::MCParticleCollection& mcParticles,
                         const edm4hep::TrackCollection& tracks,
                         const edm4hep::TrackMCParticleLinkCollection& trackToMCRelations) const{
-	MsgStream log(msgSvc(), name());
 	// MC Particles
 	std::vector<edm4hep::MCParticle> mcpSet;
 	for (const auto& mcp : mcParticles) {
@@ -79,7 +79,7 @@ void TrackPerfHistAlg::operator()(
 
 	// Tracks
 	std::vector<edm4hep::Track> trkSet;
-	log << MSG::DEBUG << "Track Collection Size: " << tracks.size() << endmsg;
+	debug() << "Track Collection Size: " << tracks.size() << endmsg;
 	for (const auto& trk : tracks) {
 		trkSet.push_back(trk);
 		m_allTracks->fill(&trk, m_lcdd);
@@ -98,9 +98,9 @@ void TrackPerfHistAlg::operator()(
 		});
 		
 		if (itMC == mcpSet.end()) { // Truth particle not accepted
-			log << MSG::DEBUG << "Actual MCParticle:\n" << mcpObj << endmsg;
-			for(const auto mc : mcpSet) { log << MSG::DEBUG << "MCPSET: " << mc << endmsg;}
-			log << MSG::DEBUG << endmsg;
+			debug() << "Actual MCParticle:\n" << mcpObj << endmsg;
+			for(const auto mc : mcpSet) { debug() << "MCPSET: " << mc << endmsg;}
+			debug() << endmsg;
 			continue;
 		}
 		if (rel.getWeight() > m_matchProb) {
